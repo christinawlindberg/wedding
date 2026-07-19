@@ -3,7 +3,7 @@
 //
 // Sheet must have a header row (row 1) with exactly these column names,
 // in any order:
-//   Name | Email | Attending | GuestCount | ChildrenCount | MealChoice | Dietary | SongRequests | Notes | Timestamp
+//   Name | Email | Attending | GuestCount | Children | MealChoice | Dietary | SongRequests | Notes | Timestamp
 
 const SHEET_NAME = "RSVPs";
 
@@ -35,7 +35,7 @@ function doPost(e) {
       case "Email": return data.email || "";
       case "Attending": return data.attending || "";
       case "GuestCount": return data.guestCount || "";
-      case "ChildrenCount": return data.childrenCount || "";
+      case "Children": return data.children || "";
       case "MealChoice": return data.mealChoice || "";
       case "Dietary": return data.dietary || "";
       case "SongRequests": return data.songRequests || "";

@@ -49,7 +49,7 @@ sensitive.
 
 1. Create a new Google Sheet. Rename the first tab to exactly `RSVPs`.
 2. In row 1, add these headers exactly (any order, but exact spelling):
-   `Name | Email | Attending | GuestCount | ChildrenCount | MealChoice | Dietary | SongRequests | Notes | Timestamp`
+   `Name | Email | Attending | GuestCount | Children | MealChoice | Dietary | SongRequests | Notes | Timestamp`
 3. Go to **Extensions > Apps Script**. Delete the placeholder code and paste
    in the contents of `google-apps-script/Code.gs`.
 4. Click **Deploy > New deployment**. Choose type **Web app**.

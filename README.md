@@ -47,23 +47,56 @@ sensitive.
 
 ## 3. Connect the RSVP form to a Google Sheet
 
-1. Create a new Google Sheet. Rename the first tab to exactly `RSVPs`.
-2. In row 1, add these headers exactly (any order, but exact spelling):
-   `Name | Email | Attending | GuestCount | Children | MealChoice | Dietary | SongRequests | Notes | Timestamp`
-3. Go to **Extensions > Apps Script**. Delete the placeholder code and paste
+The RSVP form works off two tabs in one Google Sheet: a guest list you
+maintain by hand, and a responses tab the script fills in automatically.
+
+1. Create a new Google Sheet with two tabs:
+
+   **`GuestList`** — one row per person you've invited. You fill this in
+   yourself before sending invitations. Header row:
+   `PartyID | Name | PlusOneAllowed | ChildrenAllowed`
+   - `Name` must be exactly what that person would type on the RSVP form.
+   - `PartyID`: leave **blank** for a solo invitation. For a **couple**
+     you're treating as one joint invitation (e.g. close friends/family on
+     both sides), give both of their rows the same `PartyID` (any string,
+     e.g. `smith`). They'll then be matched together whether a guest types
+     either person's name (`John Smith` or `Jane Smith`) or the combined
+     form (`John Smith & Jane Smith`, or `John & Jane Smith` if they share
+     a last name). Only couples (2-person parties) are supported this way —
+     not larger groups.
+   - `PlusOneAllowed` / `ChildrenAllowed`: TRUE or FALSE (checkbox columns
+     work well). Only guests marked TRUE will see that option — most people
+     should be FALSE/FALSE if their invite is just for themselves (and any
+     children/plus-ones are already implied, not optional). For a couple,
+     set these on either row — either being TRUE is enough; they're shared
+     across the couple, not per-person.
+
+   **`RSVPs`** — where submitted responses land. You don't need to add rows
+   here, just create the tab with the header row:
+   `PartyID | Name | Email | Attending | Dietary | PlusOne | PlusOneName | Children | SongRequests | Notes | Timestamp`
+
+2. Go to **Extensions > Apps Script**. Delete the placeholder code and paste
    in the contents of `google-apps-script/Code.gs`.
-4. Click **Deploy > New deployment**. Choose type **Web app**.
+3. Click **Deploy > New deployment**. Choose type **Web app**.
    - Execute as: **Me**
    - Who has access: **Anyone**
-5. Click **Deploy**, authorize the script when prompted, and copy the
+4. Click **Deploy**, authorize the script when prompted, and copy the
    **Web app URL** it gives you.
-6. Paste that URL into `js/config.js` as `RSVP_ENDPOINT`.
+5. Paste that URL into `js/config.js` as `RSVP_ENDPOINT`.
 
-Guests can resubmit the RSVP form any time (e.g. plans change) — it matches
-on name + email and updates their existing row instead of duplicating it.
+**How it works:** a guest types their name and the site looks it up against
+`GuestList`. If there's no match, they see a message to check spelling or
+email you — this keeps the guest count controlled since only names you've
+entered can RSVP. If matched to a couple's joint invitation, the form shows
+one block per person — each confirms their own attendance and dietary needs
+independently (so it's fine if one is coming and the other isn't) — plus a
+shared section (plus-one, children, song requests) that only shows fields
+that couple's row allows. Resubmitting later (e.g. plans change) re-matches
+by name and pre-fills what was already answered, updating the existing
+row(s) in `RSVPs` instead of creating new ones.
 
-If you ever change the RSVP form's fields, update both `rsvp.html` (the
-`name="..."` attributes) and the `switch` statement in `Code.gs` to match.
+If you ever change the RSVP form's fields, update `rsvp.html`, `js/rsvp.js`,
+and both `doGet`/`doPost` in `Code.gs` to match.
 
 ## 4. Host it — christinawlindberg.github.io/wedding/
 
@@ -96,8 +129,13 @@ a CNAME DNS record at your registrar — ask if you want help with that then.
 - [ ] Set the real password in `js/config.js` (and remember to actually
       tell guests what it is, e.g. in the invitation email)
 - [ ] Set `RSVP_ENDPOINT` in `js/config.js`
+- [ ] Fill in `GuestList` with everyone you're inviting before sending
+      invitations — anyone not on it can't RSVP
 - [ ] Test the full flow yourself: visit the public page, click through to
-      a protected page, enter the password, submit an RSVP, confirm it
-      shows up in the Google Sheet, then resubmit and confirm it updates
-      the same row instead of adding a new one
+      a protected page, enter the password, look yourself up on the RSVP
+      page (add yourself to `GuestList` first), submit, confirm it shows up
+      in `RSVPs`, then look yourself up again and confirm your answers are
+      pre-filled and resubmitting updates the same row
+- [ ] Also test looking up a name that isn't in `GuestList` — confirm you
+      get the "couldn't find that name" message
 - [ ] Set an RSVP deadline in `rsvp.html`

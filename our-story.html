@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Our Story — [Partner 1] & [Partner 2]</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="wrap">
+    <a class="brand" href="index.html">[Partner 1] &amp; [Partner 2]</a>
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="details.html">Details <span class="lock-icon">🔒</span></a></li>
+      <li><a href="rsvp.html">RSVP <span class="lock-icon">🔒</span></a></li>
+      <li><a href="our-story.html">Our Story <span class="lock-icon">🔒</span></a></li>
+    </ul>
+  </div>
+</nav>
+
+<div id="gate" class="gate">
+  <div class="gate-box">
+    <h2>This page is password protected</h2>
+    <p class="muted">Enter the password from your invitation email.</p>
+    <form id="gate-form">
+      <div class="field">
+        <label for="gate-password">Password</label>
+        <input type="password" id="gate-password" name="password" autocomplete="off" required>
+      </div>
+      <button type="submit" class="btn">Unlock</button>
+      <p id="gate-error" class="form-status error"></p>
+    </form>
+  </div>
+</div>
+
+<main data-protected-content>
+  <header class="hero">
+    <div class="wrap">
+      <div class="eyebrow">A Little Background</div>
+      <h1>Our Story</h1>
+    </div>
+  </header>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="placeholder-note">
+        Placeholder — this page is a good home for anything you want to add
+        later: how you met, family history, cultural or religious customs
+        guests will see at the wedding, or a note on the significance of the
+        venue. Split into separate pages later if any one section grows long
+        (copy this file's nav/gate structure into a new .html file).
+      </div>
+
+      <h2>How We Met</h2>
+      <p class="muted">[Your story goes here.]</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <h2>Family History</h2>
+      <p class="muted">[Notes on family background relevant to the wedding.]</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <h2>Wedding Customs</h2>
+      <p class="muted">
+        [If your ceremony includes traditions guests may not be familiar with,
+        explain them here so everyone can follow along and appreciate the
+        significance.]
+      </p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    Questions? Reach us at [email address]
+  </div>
+</footer>
+
+<script src="js/config.js"></script>
+<script src="js/gate.js"></script>
+</body>
+</html>

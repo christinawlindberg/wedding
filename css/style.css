@@ -1,0 +1,297 @@
+/* =========================================================
+   Wedding site — shared styles
+   Change the variables below to reskin the whole site.
+   Swap the hero background images by editing the
+   `background-image: url(...)` lines marked PHOTO PLACEHOLDER.
+   ========================================================= */
+
+:root {
+  --color-bg: #fdfaf6;
+  --color-surface: #ffffff;
+  --color-text: #2f2a26;
+  --color-muted: #74695f;
+  --color-accent: #a9714b;
+  --color-accent-soft: #e8d9c9;
+  --color-border: #e6ddd2;
+
+  --font-display: "Playfair Display", Georgia, "Times New Roman", serif;
+  --font-body: "Cormorant Garamond", Georgia, serif;
+  --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  --max-width: 960px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: 19px;
+  line-height: 1.6;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--color-text);
+  line-height: 1.2;
+}
+
+h1 { font-size: 3rem; }
+h2 { font-size: 2rem; margin-top: 0; }
+h3 { font-size: 1.4rem; }
+
+a {
+  color: var(--color-accent);
+}
+
+p {
+  color: var(--color-text);
+}
+
+.muted {
+  color: var(--color-muted);
+}
+
+/* ---------- layout ---------- */
+
+.wrap {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.section {
+  padding: 4rem 0;
+}
+
+.section + .section {
+  border-top: 1px solid var(--color-border);
+}
+
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 2rem;
+}
+
+.grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.grid-2 {
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+/* ---------- nav ---------- */
+
+.site-nav {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: rgba(253, 250, 246, 0.92);
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.site-nav .wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.site-nav .brand {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  text-decoration: none;
+  color: var(--color-text);
+}
+
+.site-nav ul {
+  list-style: none;
+  display: flex;
+  gap: 1.5rem;
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-ui);
+  font-size: 0.9rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.site-nav a {
+  text-decoration: none;
+  color: var(--color-text);
+}
+
+.site-nav a:hover {
+  color: var(--color-accent);
+}
+
+.lock-icon {
+  opacity: 0.5;
+  font-size: 0.8em;
+}
+
+/* ---------- hero ---------- */
+
+.hero {
+  /* PHOTO PLACEHOLDER: replace with your own image, e.g.
+     background-image: linear-gradient(rgba(0,0,0,0.25), rgba(0,0,0,0.25)), url('../assets/images/hero.jpg');
+  */
+  background: linear-gradient(135deg, var(--color-accent-soft), var(--color-bg));
+  background-size: cover;
+  background-position: center;
+  padding: 6rem 0;
+  text-align: center;
+}
+
+.hero .eyebrow {
+  font-family: var(--font-ui);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  font-size: 0.85rem;
+  color: var(--color-muted);
+  margin-bottom: 1rem;
+}
+
+.hero .date {
+  font-size: 1.3rem;
+  color: var(--color-muted);
+  margin-top: 0.5rem;
+}
+
+/* ---------- footer ---------- */
+
+.site-footer {
+  padding: 3rem 0;
+  text-align: center;
+  color: var(--color-muted);
+  font-family: var(--font-ui);
+  font-size: 0.85rem;
+}
+
+/* ---------- buttons / forms ---------- */
+
+.btn {
+  display: inline-block;
+  background: var(--color-accent);
+  color: #fff;
+  border: none;
+  padding: 0.85rem 1.75rem;
+  border-radius: 999px;
+  font-family: var(--font-ui);
+  font-size: 0.95rem;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btn:hover {
+  opacity: 0.9;
+}
+
+label {
+  display: block;
+  font-family: var(--font-ui);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--color-muted);
+  margin-bottom: 0.3rem;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="number"],
+input[type="password"],
+select,
+textarea {
+  width: 100%;
+  padding: 0.7rem 0.9rem;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  font-family: var(--font-body);
+  font-size: 1.05rem;
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.field {
+  margin-bottom: 1.25rem;
+}
+
+.radio-row {
+  display: flex;
+  gap: 1.5rem;
+  font-family: var(--font-body);
+}
+
+.radio-row label {
+  text-transform: none;
+  font-size: 1.05rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--color-text);
+}
+
+.form-status {
+  margin-top: 1rem;
+  font-family: var(--font-ui);
+  font-size: 0.9rem;
+}
+
+.form-status.success { color: #4b7a4b; }
+.form-status.error { color: #a94b4b; }
+
+/* ---------- password gate ---------- */
+
+.gate {
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.5rem;
+}
+
+.gate-box {
+  max-width: 380px;
+  width: 100%;
+  text-align: center;
+}
+
+.gate-box .field {
+  text-align: left;
+}
+
+[data-protected-content] {
+  display: none;
+}
+
+/* ---------- placeholder note ---------- */
+
+.placeholder-note {
+  background: var(--color-accent-soft);
+  border: 1px dashed var(--color-accent);
+  border-radius: 6px;
+  padding: 1rem 1.25rem;
+  font-family: var(--font-ui);
+  font-size: 0.85rem;
+  color: var(--color-text);
+  margin-bottom: 2rem;
+}

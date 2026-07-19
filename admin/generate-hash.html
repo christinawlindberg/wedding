@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Generate Password Hash (admin only)</title>
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<main class="section">
+  <div class="wrap" style="max-width: 500px;">
+    <h2>Generate a password hash</h2>
+    <p class="muted">
+      This page is for you (the site owner), not guests. Type the new guest
+      password below, copy the resulting hash, and paste it into
+      <code>js/config.js</code> as <code>PASSWORD_HASH</code>. Nothing here
+      is sent anywhere — the hash is computed in your browser.
+    </p>
+    <div class="field">
+      <label for="pw">New password</label>
+      <input type="text" id="pw" autocomplete="off">
+    </div>
+    <button class="btn" id="go">Generate hash</button>
+    <div class="field" style="margin-top: 1.5rem;">
+      <label for="out">Hash (paste into config.js)</label>
+      <textarea id="out" rows="3" readonly></textarea>
+    </div>
+  </div>
+</main>
+
+<script>
+async function sha256Hex(text) {
+  const data = new TextEncoder().encode(text);
+  const digest = await crypto.subtle.digest("SHA-256", data);
+  return Array.from(new Uint8Array(digest)).map(b => b.toString(16).padStart(2, "0")).join("");
+}
+document.getElementById("go").addEventListener("click", async () => {
+  const pw = document.getElementById("pw").value.trim();
+  document.getElementById("out").value = pw ? await sha256Hex(pw) : "";
+});
+</script>
+</body>
+</html>

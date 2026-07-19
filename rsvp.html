@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>RSVP — [Partner 1] & [Partner 2]</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="wrap">
+    <a class="brand" href="index.html">[Partner 1] &amp; [Partner 2]</a>
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="details.html">Details <span class="lock-icon">🔒</span></a></li>
+      <li><a href="rsvp.html">RSVP <span class="lock-icon">🔒</span></a></li>
+      <li><a href="our-story.html">Our Story <span class="lock-icon">🔒</span></a></li>
+    </ul>
+  </div>
+</nav>
+
+<div id="gate" class="gate">
+  <div class="gate-box">
+    <h2>This page is password protected</h2>
+    <p class="muted">Enter the password from your invitation email.</p>
+    <form id="gate-form">
+      <div class="field">
+        <label for="gate-password">Password</label>
+        <input type="password" id="gate-password" name="password" autocomplete="off" required>
+      </div>
+      <button type="submit" class="btn">Unlock</button>
+      <p id="gate-error" class="form-status error"></p>
+    </form>
+  </div>
+</div>
+
+<main data-protected-content>
+  <header class="hero">
+    <div class="wrap">
+      <div class="eyebrow">Please Respond By [RSVP Deadline]</div>
+      <h1>RSVP</h1>
+    </div>
+  </header>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="card" style="max-width: 560px; margin: 0 auto;">
+        <p class="muted">
+          If your plans change after you submit, come back to this page and
+          submit again with the same name and email — it will update your
+          existing response instead of creating a new one.
+        </p>
+
+        <form id="rsvp-form">
+          <div class="field">
+            <label for="name">Full Name</label>
+            <input type="text" id="name" name="name" required>
+          </div>
+
+          <div class="field">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required>
+          </div>
+
+          <div class="field">
+            <label>Will you be attending?</label>
+            <div class="radio-row">
+              <label><input type="radio" name="attending" value="Yes" required> Joyfully accepts</label>
+              <label><input type="radio" name="attending" value="No" required> Regretfully declines</label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="guestCount">Number of Guests (including yourself)</label>
+            <input type="number" id="guestCount" name="guestCount" min="1" max="10" value="1">
+          </div>
+
+          <div class="field">
+            <label for="childrenCount">Number of Children Attending</label>
+            <input type="number" id="childrenCount" name="childrenCount" min="0" max="10" value="0">
+          </div>
+
+          <div class="field">
+            <label for="mealChoice">Meal Preference</label>
+            <select id="mealChoice" name="mealChoice">
+              <option value="">[Select — customize options later]</option>
+              <option value="Chicken">Chicken</option>
+              <option value="Fish">Fish</option>
+              <option value="Vegetarian">Vegetarian</option>
+              <option value="Other">Other (note below)</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="dietary">Dietary Restrictions / Preferences</label>
+            <input type="text" id="dietary" name="dietary" placeholder="e.g. nut allergy, gluten-free, vegan">
+          </div>
+
+          <div class="field">
+            <label for="songRequests">Song Requests</label>
+            <textarea id="songRequests" name="songRequests" rows="2" placeholder="1-2 songs that will get you on the dance floor"></textarea>
+          </div>
+
+          <div class="field">
+            <label for="notes">Anything Else?</label>
+            <textarea id="notes" name="notes" rows="2"></textarea>
+          </div>
+
+          <button type="submit" class="btn">Submit RSVP</button>
+          <p id="rsvp-status" class="form-status"></p>
+        </form>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    Questions? Reach us at [email address]
+  </div>
+</footer>
+
+<script src="js/config.js"></script>
+<script src="js/gate.js"></script>
+<script src="js/rsvp.js"></script>
+</body>
+</html>

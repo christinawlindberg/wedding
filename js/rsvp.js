@@ -77,6 +77,8 @@
         const emailField = fragment.querySelector(".member-email-field");
         const dietaryField = fragment.querySelector(".member-dietary-field");
         const dietaryWrap = fragment.querySelector(".member-dietary-wrap");
+        const lunchField = fragment.querySelector(".member-lunch-field");
+        const lunchWrap = fragment.querySelector(".member-lunch-wrap");
         const declineNoteField = fragment.querySelector(".member-decline-note-field");
         const declineNoteWrap = fragment.querySelector(".member-decline-note-wrap");
         const radios = fragment.querySelectorAll(".member-attending-radio");
@@ -84,20 +86,23 @@
         nameField.name = `member${i}_name`;
         emailField.name = `member${i}_email`;
         dietaryField.name = `member${i}_dietary`;
+        lunchField.name = `member${i}_buffet`;
         declineNoteField.name = `member${i}_declineNote`;
         radios.forEach((r) => {
           r.name = `member${i}_attending`;
           r.required = true;
           r.addEventListener("change", () => {
-            // Dietary needs only matter if this specific person is
-            // attending; a decline note only makes sense if they're not.
+            // Dietary/buffet questions only matter if this specific
+            // person is attending; a decline note only makes sense if
+            // they're not.
             dietaryWrap.style.display = r.value === "Yes" && r.checked ? "block" : "none";
+            lunchWrap.style.display = r.value === "Yes" && r.checked ? "block" : "none";
             declineNoteWrap.style.display = r.value === "No" && r.checked ? "block" : "none";
           });
         });
 
         membersContainer.appendChild(fragment);
-        blocks.push({ block, heading, nameField, emailField, dietaryField, dietaryWrap, declineNoteField, declineNoteWrap });
+        blocks.push({ block, heading, nameField, emailField, dietaryField, dietaryWrap, lunchField, lunchWrap, declineNoteField, declineNoteWrap });
       }
       return blocks;
     }
@@ -160,11 +165,13 @@
             sharedEmail.value = member.existing.email;
           }
           m.dietaryField.value = member.existing.dietary || "";
+          m.lunchField.checked = member.existing.buffet === "Yes";
           m.declineNoteField.value = member.existing.declineNote || "";
           if (member.existing.attending) {
             const radio = m.block.querySelector(`input[value="${member.existing.attending}"]`);
             if (radio) radio.checked = true;
             m.dietaryWrap.style.display = member.existing.attending === "Yes" ? "block" : "none";
+            m.lunchWrap.style.display = member.existing.attending === "Yes" ? "block" : "none";
             m.declineNoteWrap.style.display = member.existing.attending === "No" ? "block" : "none";
           }
         }

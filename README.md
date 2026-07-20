@@ -88,7 +88,7 @@ maintain by hand, and a responses tab the script fills in automatically.
 
    **`RSVPs`** — where submitted responses land. You don't need to add rows
    here, just create the tab with the header row:
-   `PartyID | Name | Email | Attending | Dietary | DeclineNote | PlusOne | PlusOneName | Children | SongRequests | Notes | Timestamp`
+   `PartyID | Name | Email | Attending | Dietary | Buffet | DeclineNote | PlusOne | PlusOneName | Children | SongRequests | Notes | Timestamp`
 
 2. Go to **Extensions > Apps Script**. Delete the placeholder code and paste
    in the contents of `google-apps-script/Code.gs`.

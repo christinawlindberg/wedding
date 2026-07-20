@@ -80,11 +80,18 @@
              invitation (a couple, or a larger family group) see one member
              block per person, cloned at runtime from #member-template by
              js/rsvp.js; each person confirms their own attendance and
-             dietary needs, while plus-one/children/etc. are shared. -->
+             dietary needs, while email/plus-one/children/etc. are shared —
+             one email per party is duplicated onto every member's row when
+             submitted (see js/rsvp.js). -->
         <form id="rsvp-form" style="display: none;">
           <p class="muted">You're on the list, <span id="party-names"></span>!</p>
 
           <input type="hidden" id="partyId" name="partyId">
+
+          <div class="field">
+            <label for="sharedEmail">Email</label>
+            <input type="email" id="sharedEmail" required>
+          </div>
 
           <div id="members-container"></div>
 
@@ -92,11 +99,7 @@
             <div class="member-block">
               <h3 class="member-heading"></h3>
               <input type="hidden" class="member-name-field">
-
-              <div class="field">
-                <label>Email</label>
-                <input type="email" class="member-email-field">
-              </div>
+              <input type="hidden" class="member-email-field">
 
               <div class="field">
                 <label>Will you be attending?</label>
@@ -106,7 +109,7 @@
                 </div>
               </div>
 
-              <div class="field">
+              <div class="field member-dietary-wrap" style="display: none;">
                 <label>Dietary Restrictions / Preferences</label>
                 <input type="text" class="member-dietary-field" placeholder="e.g. nut allergy, gluten-free, vegan">
               </div>

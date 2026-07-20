@@ -76,23 +76,28 @@
         const nameField = fragment.querySelector(".member-name-field");
         const emailField = fragment.querySelector(".member-email-field");
         const dietaryField = fragment.querySelector(".member-dietary-field");
+        const dietaryWrap = fragment.querySelector(".member-dietary-wrap");
         const radios = fragment.querySelectorAll(".member-attending-radio");
 
         nameField.name = `member${i}_name`;
         emailField.name = `member${i}_email`;
-        emailField.required = true;
         dietaryField.name = `member${i}_dietary`;
         radios.forEach((r) => {
           r.name = `member${i}_attending`;
           r.required = true;
+          // Dietary needs only matter if this specific person is attending.
+          r.addEventListener("change", () => {
+            dietaryWrap.style.display = r.value === "Yes" && r.checked ? "block" : "none";
+          });
         });
 
         membersContainer.appendChild(fragment);
-        blocks.push({ block, heading, nameField, emailField, dietaryField });
+        blocks.push({ block, heading, nameField, emailField, dietaryField, dietaryWrap });
       }
       return blocks;
     }
 
+    const sharedEmail = document.getElementById("sharedEmail");
     const plusOneField = document.getElementById("plusOneField");
     const plusOneCheckbox = document.getElementById("plusOne");
     const plusOneNameInput = document.getElementById("plusOneName");
@@ -127,17 +132,23 @@
       partyNamesEl.textContent = joinNames(match.members.map((m) => m.name));
 
       const memberBlocks = buildMemberBlocks(match.members.length);
+      sharedEmail.value = "";
       match.members.forEach((member, i) => {
         const m = memberBlocks[i];
         m.heading.textContent = member.name;
         m.nameField.value = member.name;
 
         if (member.existing) {
-          m.emailField.value = member.existing.email || "";
+          // One email per party — take the first one found on record, since
+          // every member's row carries the same duplicated value.
+          if (!sharedEmail.value && member.existing.email) {
+            sharedEmail.value = member.existing.email;
+          }
           m.dietaryField.value = member.existing.dietary || "";
           if (member.existing.attending) {
             const radio = m.block.querySelector(`input[value="${member.existing.attending}"]`);
             if (radio) radio.checked = true;
+            m.dietaryWrap.style.display = member.existing.attending === "Yes" ? "block" : "none";
           }
         }
       });
@@ -232,6 +243,12 @@
       submitBtn.disabled = true;
       status.textContent = "Submitting…";
       status.className = "form-status";
+
+      // One email per party — duplicate it onto every member's hidden
+      // email field so each of their RSVPs rows carries it.
+      rsvpForm.querySelectorAll(".member-email-field").forEach((field) => {
+        field.value = sharedEmail.value;
+      });
 
       const formData = new FormData(rsvpForm);
 

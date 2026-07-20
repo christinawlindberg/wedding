@@ -88,12 +88,15 @@
 
           <input type="hidden" id="partyId" name="partyId">
 
-          <div class="field">
-            <label for="sharedEmail">Email</label>
-            <input type="email" id="sharedEmail" required>
-          </div>
-
           <div id="members-container"></div>
+
+          <!-- Only needed to send updates, so only collected if at least
+               one member of the party is accepting — see refreshSharedVisibility
+               in js/rsvp.js. -->
+          <div id="sharedEmailField" class="field" style="display: none;">
+            <label for="sharedEmail">Email</label>
+            <input type="email" id="sharedEmail">
+          </div>
 
           <template id="member-template">
             <div class="member-block">

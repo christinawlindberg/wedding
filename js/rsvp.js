@@ -103,6 +103,7 @@
     }
 
     const sharedEmail = document.getElementById("sharedEmail");
+    const sharedEmailField = document.getElementById("sharedEmailField");
     const plusOneField = document.getElementById("plusOneField");
     const plusOneCheckbox = document.getElementById("plusOne");
     const plusOneNameInput = document.getElementById("plusOneName");
@@ -117,14 +118,18 @@
       plusOneNameInput.style.display = plusOneCheckbox.checked ? "block" : "none";
     });
 
-    // Shared section (plus-one/children/etc.) shows if at least one member
-    // of the party is attending. Scoped to attending radios specifically —
-    // matching any input[value="Yes"] would also catch the plus-one
-    // checkbox (which shares that value) and could leave the section
-    // stuck open after everyone switches to declining.
+    // Shared section (plus-one/children/etc.) and the email field show if
+    // at least one member of the party is attending — email is only
+    // needed to send updates, and declining parties won't need any.
+    // Scoped to attending radios specifically — matching any
+    // input[value="Yes"] would also catch the plus-one checkbox (which
+    // shares that value) and could leave the section stuck open after
+    // everyone switches to declining.
     function refreshSharedVisibility() {
       const anyAttending = rsvpForm.querySelectorAll('input[name$="_attending"][value="Yes"]:checked').length > 0;
       details.style.display = anyAttending ? "block" : "none";
+      sharedEmailField.style.display = anyAttending ? "block" : "none";
+      sharedEmail.required = anyAttending;
     }
     rsvpForm.addEventListener("change", (e) => {
       if (e.target.type === "radio" && e.target.name.endsWith("_attending")) {

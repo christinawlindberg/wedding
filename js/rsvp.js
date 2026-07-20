@@ -77,22 +77,27 @@
         const emailField = fragment.querySelector(".member-email-field");
         const dietaryField = fragment.querySelector(".member-dietary-field");
         const dietaryWrap = fragment.querySelector(".member-dietary-wrap");
+        const declineNoteField = fragment.querySelector(".member-decline-note-field");
+        const declineNoteWrap = fragment.querySelector(".member-decline-note-wrap");
         const radios = fragment.querySelectorAll(".member-attending-radio");
 
         nameField.name = `member${i}_name`;
         emailField.name = `member${i}_email`;
         dietaryField.name = `member${i}_dietary`;
+        declineNoteField.name = `member${i}_declineNote`;
         radios.forEach((r) => {
           r.name = `member${i}_attending`;
           r.required = true;
-          // Dietary needs only matter if this specific person is attending.
           r.addEventListener("change", () => {
+            // Dietary needs only matter if this specific person is
+            // attending; a decline note only makes sense if they're not.
             dietaryWrap.style.display = r.value === "Yes" && r.checked ? "block" : "none";
+            declineNoteWrap.style.display = r.value === "No" && r.checked ? "block" : "none";
           });
         });
 
         membersContainer.appendChild(fragment);
-        blocks.push({ block, heading, nameField, emailField, dietaryField, dietaryWrap });
+        blocks.push({ block, heading, nameField, emailField, dietaryField, dietaryWrap, declineNoteField, declineNoteWrap });
       }
       return blocks;
     }
@@ -113,9 +118,12 @@
     });
 
     // Shared section (plus-one/children/etc.) shows if at least one member
-    // of the party is attending.
+    // of the party is attending. Scoped to attending radios specifically —
+    // matching any input[value="Yes"] would also catch the plus-one
+    // checkbox (which shares that value) and could leave the section
+    // stuck open after everyone switches to declining.
     function refreshSharedVisibility() {
-      const anyAttending = rsvpForm.querySelectorAll('input[value="Yes"]:checked').length > 0;
+      const anyAttending = rsvpForm.querySelectorAll('input[name$="_attending"][value="Yes"]:checked').length > 0;
       details.style.display = anyAttending ? "block" : "none";
     }
     rsvpForm.addEventListener("change", (e) => {
@@ -145,10 +153,12 @@
             sharedEmail.value = member.existing.email;
           }
           m.dietaryField.value = member.existing.dietary || "";
+          m.declineNoteField.value = member.existing.declineNote || "";
           if (member.existing.attending) {
             const radio = m.block.querySelector(`input[value="${member.existing.attending}"]`);
             if (radio) radio.checked = true;
             m.dietaryWrap.style.display = member.existing.attending === "Yes" ? "block" : "none";
+            m.declineNoteWrap.style.display = member.existing.attending === "No" ? "block" : "none";
           }
         }
       });

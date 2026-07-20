@@ -18,7 +18,7 @@
 //      shares one plus-one/children answer.
 //
 // 2. "RSVPs" — where submitted responses land, header row:
-//      PartyID | Name | Email | Attending | Dietary | PlusOne | PlusOneName | Children | SongRequests | Notes | Timestamp
+//      PartyID | Name | Email | Attending | Dietary | DeclineNote | PlusOne | PlusOneName | Children | SongRequests | Notes | Timestamp
 //    You don't need to create rows here yourself — doPost fills them in,
 //    one row per person (so a couple's joint RSVP still produces two rows,
 //    sharing PartyID and the PlusOne/Children/etc. columns).
@@ -113,6 +113,7 @@ function buildPartyResult(party, rsvps) {
         email: existingRow["Email"],
         attending: existingRow["Attending"],
         dietary: existingRow["Dietary"],
+        declineNote: existingRow["DeclineNote"],
       } : null,
     };
   });
@@ -199,6 +200,7 @@ function doPost(e) {
       email: data["member" + i + "_email"],
       attending: data["member" + i + "_attending"],
       dietary: data["member" + i + "_dietary"],
+      declineNote: data["member" + i + "_declineNote"],
     });
     i++;
   }
@@ -220,6 +222,7 @@ function doPost(e) {
         case "Email": return member.email || "";
         case "Attending": return member.attending || "";
         case "Dietary": return member.dietary || "";
+        case "DeclineNote": return member.declineNote || "";
         case "PlusOne": return shared.PlusOne;
         case "PlusOneName": return shared.PlusOneName;
         case "Children": return shared.Children;

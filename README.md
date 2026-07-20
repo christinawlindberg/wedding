@@ -55,21 +55,36 @@ maintain by hand, and a responses tab the script fills in automatically.
    **`GuestList`** — one row per person you've invited. You fill this in
    yourself before sending invitations. Header row:
    `PartyID | Name | PlusOneAllowed | ChildrenAllowed`
+
+   `GuestList-example.csv` in this folder has example rows covering every
+   case (solo guest, solo guest with a plus-one, solo guest allowed
+   children, a couple sharing a last name, a couple with different last
+   names). Easiest way to use it: in your Google Sheet, right-click the tab
+   bar > **Insert sheet**, name it `GuestList`, then File > **Import** >
+   Upload the CSV > Import location: **Replace current sheet**. Delete the
+   example rows and replace with your real guest list, keeping the header
+   row.
    - `Name` must be exactly what that person would type on the RSVP form.
-   - `PartyID`: leave **blank** for a solo invitation. For a **couple**
-     you're treating as one joint invitation (e.g. close friends/family on
-     both sides), give both of their rows the same `PartyID` (any string,
-     e.g. `smith`). They'll then be matched together whether a guest types
-     either person's name (`John Smith` or `Jane Smith`) or the combined
-     form (`John Smith & Jane Smith`, or `John & Jane Smith` if they share
-     a last name). Only couples (2-person parties) are supported this way —
-     not larger groups.
+     Ideally unique across the whole sheet — if two different people share
+     a name (e.g. a grandparent and grandchild), it's best to add a middle
+     name or Sr./Jr. to one of them so a lookup goes straight to the right
+     person. If you leave a duplicate name as-is, it isn't broken: the
+     guest is shown both matching parties (labeled by who else is on each
+     invitation) and picks which one they are.
+   - `PartyID`: leave **blank** for a solo invitation. For a **shared
+     invitation** (a couple, or a larger family group under one invite),
+     give all their rows the same `PartyID` (any string, e.g. `smith`).
+     They'll then be matched together whether a guest types any one
+     person's name, or — for a two-person party — the combined form
+     (`John Smith & Jane Smith`, or `John & Jane Smith` if they share a
+     last name; larger groups are matched by individual name only, not a
+     combined form).
    - `PlusOneAllowed` / `ChildrenAllowed`: TRUE or FALSE (checkbox columns
      work well). Only guests marked TRUE will see that option — most people
      should be FALSE/FALSE if their invite is just for themselves (and any
-     children/plus-ones are already implied, not optional). For a couple,
-     set these on either row — either being TRUE is enough; they're shared
-     across the couple, not per-person.
+     children/plus-ones are already implied, not optional). For a shared
+     invitation, set these on any one row — any TRUE is enough; they're
+     shared across the whole party, not per-person.
 
    **`RSVPs`** — where submitted responses land. You don't need to add rows
    here, just create the tab with the header row:
@@ -87,13 +102,13 @@ maintain by hand, and a responses tab the script fills in automatically.
 **How it works:** a guest types their name and the site looks it up against
 `GuestList`. If there's no match, they see a message to check spelling or
 email you — this keeps the guest count controlled since only names you've
-entered can RSVP. If matched to a couple's joint invitation, the form shows
-one block per person — each confirms their own attendance and dietary needs
-independently (so it's fine if one is coming and the other isn't) — plus a
-shared section (plus-one, children, song requests) that only shows fields
-that couple's row allows. Resubmitting later (e.g. plans change) re-matches
-by name and pre-fills what was already answered, updating the existing
-row(s) in `RSVPs` instead of creating new ones.
+entered can RSVP. If matched to a shared invitation (couple or family), the
+form shows one block per person — each confirms their own attendance and
+dietary needs independently (so it's fine if some are coming and others
+aren't) — plus a shared section (plus-one, children, song requests) that
+only shows fields that party's row allows. Resubmitting later (e.g. plans
+change) re-matches by name and pre-fills what was already answered,
+updating the existing row(s) in `RSVPs` instead of creating new ones.
 
 If you ever change the RSVP form's fields, update `rsvp.html`, `js/rsvp.js`,
 and both `doGet`/`doPost` in `Code.gs` to match.

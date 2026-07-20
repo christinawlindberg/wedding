@@ -1,0 +1,8 @@
+PartyID,Name,PlusOneAllowed,ChildrenAllowed
+,Alex Chen,FALSE,FALSE
+,Sam Rivera,TRUE,FALSE
+,Morgan Lee,FALSE,TRUE
+smith,John Smith,FALSE,TRUE
+smith,Jane Smith,FALSE,TRUE
+lee-park,Taylor Lee,TRUE,FALSE
+lee-park,Jordan Park,TRUE,FALSE

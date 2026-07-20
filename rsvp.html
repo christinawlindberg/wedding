@@ -65,60 +65,53 @@
           </form>
         </div>
 
-        <!-- Step 2: the actual RSVP, shown once matched. Couples who share
-             an invitation see two member blocks (member-2 is hidden for a
-             solo invitation); each person confirms their own attendance and
+        <!-- Shown instead of step 2 if the typed name matches more than one
+             party (e.g. two guests happen to share a name) — guest picks
+             which one they are before the form unlocks. -->
+        <div id="disambiguation-step" style="display: none;">
+          <p class="muted">
+            More than one person on the guest list has that name. Which one
+            are you?
+          </p>
+          <div id="disambiguation-options"></div>
+        </div>
+
+        <!-- Step 2: the actual RSVP, shown once matched. Guests who share an
+             invitation (a couple, or a larger family group) see one member
+             block per person, cloned at runtime from #member-template by
+             js/rsvp.js; each person confirms their own attendance and
              dietary needs, while plus-one/children/etc. are shared. -->
         <form id="rsvp-form" style="display: none;">
-          <p class="muted">Hi <span id="party-names"></span> — you're on the list!</p>
+          <p class="muted">You're on the list, <span id="party-names"></span>!</p>
 
           <input type="hidden" id="partyId" name="partyId">
 
-          <div id="member-1" class="member-block">
-            <h3 id="member-1-heading"></h3>
-            <input type="hidden" id="member1_name" name="member1_name">
+          <div id="members-container"></div>
 
-            <div class="field">
-              <label for="member1_email">Email</label>
-              <input type="email" id="member1_email" name="member1_email" required>
-            </div>
+          <template id="member-template">
+            <div class="member-block">
+              <h3 class="member-heading"></h3>
+              <input type="hidden" class="member-name-field">
 
-            <div class="field">
-              <label>Will you be attending?</label>
-              <div class="radio-row">
-                <label><input type="radio" name="member1_attending" value="Yes" required> Joyfully accepts</label>
-                <label><input type="radio" name="member1_attending" value="No" required> Regretfully declines</label>
+              <div class="field">
+                <label>Email</label>
+                <input type="email" class="member-email-field">
+              </div>
+
+              <div class="field">
+                <label>Will you be attending?</label>
+                <div class="radio-row">
+                  <label><input type="radio" class="member-attending-radio" value="Yes"> Joyfully accepts</label>
+                  <label><input type="radio" class="member-attending-radio" value="No"> Regretfully declines</label>
+                </div>
+              </div>
+
+              <div class="field">
+                <label>Dietary Restrictions / Preferences</label>
+                <input type="text" class="member-dietary-field" placeholder="e.g. nut allergy, gluten-free, vegan">
               </div>
             </div>
-
-            <div class="field">
-              <label for="member1_dietary">Dietary Restrictions / Preferences</label>
-              <input type="text" id="member1_dietary" name="member1_dietary" placeholder="e.g. nut allergy, gluten-free, vegan">
-            </div>
-          </div>
-
-          <div id="member-2" class="member-block" style="display: none;">
-            <h3 id="member-2-heading"></h3>
-            <input type="hidden" id="member2_name" name="member2_name">
-
-            <div class="field">
-              <label for="member2_email">Email</label>
-              <input type="email" id="member2_email" name="member2_email">
-            </div>
-
-            <div class="field">
-              <label>Will you be attending?</label>
-              <div class="radio-row">
-                <label><input type="radio" name="member2_attending" value="Yes"> Joyfully accepts</label>
-                <label><input type="radio" name="member2_attending" value="No"> Regretfully declines</label>
-              </div>
-            </div>
-
-            <div class="field">
-              <label for="member2_dietary">Dietary Restrictions / Preferences</label>
-              <input type="text" id="member2_dietary" name="member2_dietary" placeholder="e.g. nut allergy, gluten-free, vegan">
-            </div>
-          </div>
+          </template>
 
           <div id="attending-details" style="display: none;">
             <div id="plusOneField" class="field" style="display: none;">

@@ -1,12 +1,14 @@
 // RSVP flow: guests look themselves up by name against the GuestList sheet
-// (see google-apps-script/Code.gs). A lookup can match a solo guest or a
-// couple sharing one invitation (matched by either person's name, or the
-// combined "First & First Last" form) — see Code.gs for how that matching
-// works. If matched, the form unlocks with one member block per person
-// (each confirms their own attendance + dietary needs) plus a shared
-// section (plus-one, children, song requests) that only shows fields the
-// guest's row actually allows. Existing answers are pre-filled so a repeat
-// visit is an edit, not a fresh blank form.
+// (see google-apps-script/Code.gs). A lookup can match a solo guest, a
+// couple (matched by either person's name, or the combined "First & First
+// Last" form), or a larger family group sharing one invitation — see
+// Code.gs for how that matching works. If matched, the form unlocks with
+// one member block per person, cloned at runtime from #member-template
+// since a party can be any size (each person confirms their own
+// attendance + dietary needs) plus a shared section (plus-one, children,
+// song requests) that only shows fields the guest's row actually allows.
+// Existing answers are pre-filled so a repeat visit is an edit, not a
+// fresh blank form.
 (function () {
   // Apps Script web app responses aren't reliably readable via cross-origin
   // fetch(), so lookups use JSONP: a <script> tag pointed at the endpoint,
@@ -39,32 +41,57 @@
     });
   }
 
+  // "A, B & C" — used both for the party greeting and for labeling each
+  // option in the disambiguation picker.
+  function joinNames(names) {
+    return names.length > 1
+      ? names.slice(0, -1).join(", ") + " & " + names[names.length - 1]
+      : names[0];
+  }
+
   document.addEventListener("DOMContentLoaded", () => {
     const lookupForm = document.getElementById("lookup-form");
     const lookupStep = document.getElementById("lookup-step");
     const lookupStatus = document.getElementById("lookup-status");
+    const disambiguationStep = document.getElementById("disambiguation-step");
+    const disambiguationOptions = document.getElementById("disambiguation-options");
     const rsvpForm = document.getElementById("rsvp-form");
     if (!lookupForm || !rsvpForm) return;
 
     const partyNamesEl = document.getElementById("party-names");
     const partyIdField = document.getElementById("partyId");
+    const membersContainer = document.getElementById("members-container");
+    const memberTemplate = document.getElementById("member-template");
 
-    const memberBlocks = [
-      {
-        block: document.getElementById("member-1"),
-        heading: document.getElementById("member-1-heading"),
-        nameField: document.getElementById("member1_name"),
-        emailField: document.getElementById("member1_email"),
-        dietaryField: document.getElementById("member1_dietary"),
-      },
-      {
-        block: document.getElementById("member-2"),
-        heading: document.getElementById("member-2-heading"),
-        nameField: document.getElementById("member2_name"),
-        emailField: document.getElementById("member2_email"),
-        dietaryField: document.getElementById("member2_dietary"),
-      },
-    ];
+    // Builds one member block per party member (index is 1-based to match
+    // the memberN_* field naming Code.gs's doPost expects), wiring up
+    // name="..." attributes since these fields aren't in the static HTML.
+    function buildMemberBlocks(count) {
+      membersContainer.innerHTML = "";
+      const blocks = [];
+      for (let i = 1; i <= count; i++) {
+        const fragment = memberTemplate.content.cloneNode(true);
+        const block = fragment.querySelector(".member-block");
+        const heading = fragment.querySelector(".member-heading");
+        const nameField = fragment.querySelector(".member-name-field");
+        const emailField = fragment.querySelector(".member-email-field");
+        const dietaryField = fragment.querySelector(".member-dietary-field");
+        const radios = fragment.querySelectorAll(".member-attending-radio");
+
+        nameField.name = `member${i}_name`;
+        emailField.name = `member${i}_email`;
+        emailField.required = true;
+        dietaryField.name = `member${i}_dietary`;
+        radios.forEach((r) => {
+          r.name = `member${i}_attending`;
+          r.required = true;
+        });
+
+        membersContainer.appendChild(fragment);
+        blocks.push({ block, heading, nameField, emailField, dietaryField });
+      }
+      return blocks;
+    }
 
     const plusOneField = document.getElementById("plusOneField");
     const plusOneCheckbox = document.getElementById("plusOne");
@@ -92,6 +119,73 @@
       }
     });
 
+    // Populates and reveals the RSVP form from a single matched party
+    // (either the direct lookup result, or whichever option the guest
+    // picked in the disambiguation step).
+    function applyMatch(match) {
+      partyIdField.value = match.partyId || "";
+      partyNamesEl.textContent = joinNames(match.members.map((m) => m.name));
+
+      const memberBlocks = buildMemberBlocks(match.members.length);
+      match.members.forEach((member, i) => {
+        const m = memberBlocks[i];
+        m.heading.textContent = member.name;
+        m.nameField.value = member.name;
+
+        if (member.existing) {
+          m.emailField.value = member.existing.email || "";
+          m.dietaryField.value = member.existing.dietary || "";
+          if (member.existing.attending) {
+            const radio = m.block.querySelector(`input[value="${member.existing.attending}"]`);
+            if (radio) radio.checked = true;
+          }
+        }
+      });
+
+      plusOneField.style.display = match.plusOneAllowed ? "block" : "none";
+      childrenField.style.display = match.childrenAllowed ? "block" : "none";
+
+      const shared = match.existingShared;
+      if (shared) {
+        if (match.plusOneAllowed) {
+          plusOneCheckbox.checked = shared.plusOne === "Yes";
+          plusOneNameInput.value = shared.plusOneName || "";
+          plusOneNameInput.style.display = plusOneCheckbox.checked ? "block" : "none";
+        }
+        if (match.childrenAllowed) {
+          childrenInput.value = shared.children || "";
+        }
+        songRequestsInput.value = shared.songRequests || "";
+        notesInput.value = shared.notes || "";
+      }
+
+      refreshSharedVisibility();
+      lookupStep.style.display = "none";
+      disambiguationStep.style.display = "none";
+      rsvpForm.style.display = "block";
+    }
+
+    // Renders one button per candidate party when a typed name matches
+    // more than one (e.g. two guests happen to share a name). Each button
+    // is labeled with that party's full member list, since seeing who
+    // else is on the invitation is what actually distinguishes them.
+    function showDisambiguation(options) {
+      disambiguationOptions.innerHTML = "";
+      options.forEach((option) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "btn";
+        button.style.display = "block";
+        button.style.width = "100%";
+        button.style.marginBottom = "0.75rem";
+        button.textContent = joinNames(option.members.map((m) => m.name));
+        button.addEventListener("click", () => applyMatch(option));
+        disambiguationOptions.appendChild(button);
+      });
+      lookupStep.style.display = "none";
+      disambiguationStep.style.display = "block";
+    }
+
     lookupForm.addEventListener("submit", async (e) => {
       e.preventDefault();
 
@@ -118,62 +212,11 @@
           return;
         }
 
-        partyIdField.value = result.partyId || "";
-        partyNamesEl.textContent = result.members.map((m) => m.name).join(" & ");
-
-        result.members.forEach((member, i) => {
-          const m = memberBlocks[i];
-          m.block.style.display = "block";
-          m.heading.textContent = member.name;
-          m.nameField.value = member.name;
-          m.emailField.required = true;
-          m.block.querySelectorAll('input[type="radio"]').forEach((r) => { r.required = true; });
-
-          if (member.existing) {
-            m.emailField.value = member.existing.email || "";
-            m.dietaryField.value = member.existing.dietary || "";
-            if (member.existing.attending) {
-              const radio = m.block.querySelector(`input[value="${member.existing.attending}"]`);
-              if (radio) radio.checked = true;
-            }
-          } else {
-            m.emailField.value = "";
-            m.dietaryField.value = "";
-          }
-        });
-
-        // Hide (and disable requirement on) the second member block for a
-        // solo invitation.
-        if (result.members.length < 2) {
-          const m = memberBlocks[1];
-          m.block.style.display = "none";
-          m.emailField.required = false;
-          m.emailField.value = "";
-          m.dietaryField.value = "";
-          m.nameField.value = "";
-          m.block.querySelectorAll('input[type="radio"]').forEach((r) => { r.required = false; r.checked = false; });
+        if (result.ambiguous) {
+          showDisambiguation(result.options);
+        } else {
+          applyMatch(result);
         }
-
-        plusOneField.style.display = result.plusOneAllowed ? "block" : "none";
-        childrenField.style.display = result.childrenAllowed ? "block" : "none";
-
-        const shared = result.existingShared;
-        if (shared) {
-          if (result.plusOneAllowed) {
-            plusOneCheckbox.checked = shared.plusOne === "Yes";
-            plusOneNameInput.value = shared.plusOneName || "";
-            plusOneNameInput.style.display = plusOneCheckbox.checked ? "block" : "none";
-          }
-          if (result.childrenAllowed) {
-            childrenInput.value = shared.children || "";
-          }
-          songRequestsInput.value = shared.songRequests || "";
-          notesInput.value = shared.notes || "";
-        }
-
-        refreshSharedVisibility();
-        lookupStep.style.display = "none";
-        rsvpForm.style.display = "block";
       } catch (err) {
         lookupStatus.textContent = "Something went wrong looking up your invitation. Please try again.";
         lookupStatus.className = "form-status error";

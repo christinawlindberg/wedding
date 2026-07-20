@@ -25,7 +25,10 @@
 //
 // Matching is done on Name (case-insensitive, trimmed). Guests look
 // themselves up by name; resubmitting later updates their existing row(s)
-// in RSVPs rather than duplicating them.
+// in RSVPs rather than duplicating them. If the same name appears in more
+// than one party (duplicate names weren't distinguished in GuestList), the
+// guest is shown all matching parties and asked to pick which one they
+// are — see the "ambiguous" branch in doGet.
 
 const GUEST_LIST_SHEET = "GuestList";
 const RSVP_SHEET = "RSVPs";
@@ -79,17 +82,58 @@ function groupGuestList(guestList) {
   return Object.values(groups);
 }
 
-function findMatchingParty(guestList, typedName) {
+// Returns every party the typed name could refer to. Normally just one,
+// but if the same name appears in more than one party (e.g. two people who
+// happen to share a name and weren't distinguished in GuestList), this
+// returns all of them so the guest can be asked to pick which one they are
+// rather than silently guessing.
+function findMatchingParties(guestList, typedName) {
   const groups = groupGuestList(guestList);
+  const matched = [];
 
-  const direct = groups.find((g) => g.rows.some((row) => normalizeName(row["Name"]) === typedName));
-  if (direct) return direct;
+  groups.forEach((g) => {
+    const directHit = g.rows.some((row) => normalizeName(row["Name"]) === typedName);
+    const jointHit = g.rows.length === 2 &&
+      jointNameCandidates(g.rows[0]["Name"], g.rows[1]["Name"]).some((c) => normalizeName(c) === typedName);
+    if (directHit || jointHit) matched.push(g);
+  });
 
-  return groups.find((g) => {
-    if (g.rows.length !== 2) return false;
-    const candidates = jointNameCandidates(g.rows[0]["Name"], g.rows[1]["Name"]);
-    return candidates.some((c) => normalizeName(c) === typedName);
-  }) || null;
+  return matched;
+}
+
+function buildPartyResult(party, rsvps) {
+  const plusOneAllowed = party.rows.some((row) => isTrue(row["PlusOneAllowed"]));
+  const childrenAllowed = party.rows.some((row) => isTrue(row["ChildrenAllowed"]));
+
+  const members = party.rows.map((row) => {
+    const existingRow = rsvps.find((r) => normalizeName(r["Name"]) === normalizeName(row["Name"]));
+    return {
+      name: row["Name"],
+      existing: existingRow ? {
+        email: existingRow["Email"],
+        attending: existingRow["Attending"],
+        dietary: existingRow["Dietary"],
+      } : null,
+    };
+  });
+
+  const sharedSourceRow = rsvps.find((r) =>
+    party.rows.some((row) => normalizeName(row["Name"]) === normalizeName(r["Name"]))
+  );
+
+  return {
+    partyId: party.partyId,
+    plusOneAllowed: plusOneAllowed,
+    childrenAllowed: childrenAllowed,
+    members: members,
+    existingShared: sharedSourceRow ? {
+      plusOne: sharedSourceRow["PlusOne"],
+      plusOneName: sharedSourceRow["PlusOneName"],
+      children: sharedSourceRow["Children"],
+      songRequests: sharedSourceRow["SongRequests"],
+      notes: sharedSourceRow["Notes"],
+    } : null,
+  };
 }
 
 // GET requests are guest lookups, served as JSONP since Apps Script web app
@@ -103,44 +147,18 @@ function doGet(e) {
   const guestList = sheetAsObjects(ss.getSheetByName(GUEST_LIST_SHEET));
   const rsvps = sheetAsObjects(ss.getSheetByName(RSVP_SHEET));
 
-  const party = findMatchingParty(guestList, typedName);
+  const parties = findMatchingParties(guestList, typedName);
 
   let result;
-  if (!party) {
+  if (parties.length === 0) {
     result = { found: false };
+  } else if (parties.length === 1) {
+    result = Object.assign({ found: true, ambiguous: false }, buildPartyResult(parties[0], rsvps));
   } else {
-    const plusOneAllowed = party.rows.some((row) => isTrue(row["PlusOneAllowed"]));
-    const childrenAllowed = party.rows.some((row) => isTrue(row["ChildrenAllowed"]));
-
-    const members = party.rows.map((row) => {
-      const existingRow = rsvps.find((r) => normalizeName(r["Name"]) === normalizeName(row["Name"]));
-      return {
-        name: row["Name"],
-        existing: existingRow ? {
-          email: existingRow["Email"],
-          attending: existingRow["Attending"],
-          dietary: existingRow["Dietary"],
-        } : null,
-      };
-    });
-
-    const sharedSourceRow = rsvps.find((r) =>
-      party.rows.some((row) => normalizeName(row["Name"]) === normalizeName(r["Name"]))
-    );
-
     result = {
       found: true,
-      partyId: party.partyId,
-      plusOneAllowed: plusOneAllowed,
-      childrenAllowed: childrenAllowed,
-      members: members,
-      existingShared: sharedSourceRow ? {
-        plusOne: sharedSourceRow["PlusOne"],
-        plusOneName: sharedSourceRow["PlusOneName"],
-        children: sharedSourceRow["Children"],
-        songRequests: sharedSourceRow["SongRequests"],
-        notes: sharedSourceRow["Notes"],
-      } : null,
+      ambiguous: true,
+      options: parties.map((party) => buildPartyResult(party, rsvps)),
     };
   }
 
@@ -170,12 +188,19 @@ function doPost(e) {
     Notes: data.notes || "",
   };
 
+  // Party size isn't fixed (solo, couple, or a larger family group all use
+  // the same memberN_* naming from rsvp.html), so keep reading member1,
+  // member2, member3... until one isn't present.
   const members = [];
-  if (data.member1_name) {
-    members.push({ name: data.member1_name, email: data.member1_email, attending: data.member1_attending, dietary: data.member1_dietary });
-  }
-  if (data.member2_name) {
-    members.push({ name: data.member2_name, email: data.member2_email, attending: data.member2_attending, dietary: data.member2_dietary });
+  let i = 1;
+  while (data["member" + i + "_name"]) {
+    members.push({
+      name: data["member" + i + "_name"],
+      email: data["member" + i + "_email"],
+      attending: data["member" + i + "_attending"],
+      dietary: data["member" + i + "_dietary"],
+    });
+    i++;
   }
 
   members.forEach((member) => {

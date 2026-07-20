@@ -1,2 +1,7 @@
 .DS_Store
 .claude/
+
+# Real guest list — contains actual guest names, kept out of git since this
+# repo is headed for a public GitHub Pages deploy. Import it directly into
+# your Google Sheet; see GuestList-example.csv for the format.
+GuestList-template.csv

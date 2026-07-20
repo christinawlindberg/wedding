@@ -295,6 +295,12 @@ textarea {
   margin-bottom: 1rem;
 }
 
+.section-divider {
+  border: none;
+  border-top: 1px solid var(--color-border);
+  margin: 1.75rem 0;
+}
+
 [data-protected-content] {
   display: none;
 }

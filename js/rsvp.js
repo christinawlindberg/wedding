@@ -104,6 +104,7 @@
 
     const sharedEmail = document.getElementById("sharedEmail");
     const sharedEmailField = document.getElementById("sharedEmailField");
+    const sharedSectionDivider = document.getElementById("sharedSectionDivider");
     const plusOneField = document.getElementById("plusOneField");
     const plusOneCheckbox = document.getElementById("plusOne");
     const plusOneNameInput = document.getElementById("plusOneName");
@@ -130,6 +131,7 @@
       details.style.display = anyAttending ? "block" : "none";
       sharedEmailField.style.display = anyAttending ? "block" : "none";
       sharedEmail.required = anyAttending;
+      sharedSectionDivider.style.display = anyAttending ? "block" : "none";
     }
     rsvpForm.addEventListener("change", (e) => {
       if (e.target.type === "radio" && e.target.name.endsWith("_attending")) {

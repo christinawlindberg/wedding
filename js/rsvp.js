@@ -221,16 +221,17 @@
       disambiguationStep.style.display = "block";
     }
 
-    lookupForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-
+    // Looks up a name and reveals the matching step. Used both for a
+    // normal form submit and for the ?name= auto-lookup below (invitation
+    // links can be pre-filled with a guest's exact name so they don't have
+    // to guess how much of it — middle names included — we're expecting).
+    async function performLookup(typedName) {
       if (!SITE_CONFIG.RSVP_ENDPOINT || SITE_CONFIG.RSVP_ENDPOINT.startsWith("PASTE_")) {
         lookupStatus.textContent = "RSVP isn't connected yet — see README for setup steps.";
         lookupStatus.className = "form-status error";
         return;
       }
 
-      const typedName = document.getElementById("lookupName").value.trim();
       if (!typedName) return;
 
       const submitBtn = lookupForm.querySelector('button[type="submit"]');
@@ -258,7 +259,20 @@
       } finally {
         submitBtn.disabled = false;
       }
+    }
+
+    lookupForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      performLookup(document.getElementById("lookupName").value.trim());
     });
+
+    // Invitation links can carry ?name=Full+Name to skip straight to a
+    // guest's RSVP instead of making them type it in.
+    const prefilledName = new URLSearchParams(window.location.search).get("name");
+    if (prefilledName) {
+      document.getElementById("lookupName").value = prefilledName;
+      performLookup(prefilledName.trim());
+    }
 
     rsvpForm.addEventListener("submit", async (e) => {
       e.preventDefault();

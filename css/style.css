@@ -317,3 +317,28 @@ textarea {
   color: var(--color-text);
   margin-bottom: 2rem;
 }
+
+/* ---------- buffet callout ---------- */
+
+.buffet-callout {
+  background: var(--color-accent-soft);
+  border: 1px solid var(--color-accent);
+  border-radius: 8px;
+  padding: 1.1rem 1.25rem;
+}
+
+.buffet-callout label {
+  text-transform: none;
+  font-size: 1.1rem;
+  color: var(--color-text);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.buffet-callout-note {
+  margin: 0.5rem 0 0;
+  font-family: var(--font-ui);
+  font-size: 0.85rem;
+  color: var(--color-muted);
+}

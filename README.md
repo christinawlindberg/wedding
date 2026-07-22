@@ -113,6 +113,21 @@ updating the existing row(s) in `RSVPs` instead of creating new ones.
 If you ever change the RSVP form's fields, update `rsvp.html`, `js/rsvp.js`,
 and both `doGet`/`doPost` in `Code.gs` to match.
 
+**Prefilled invitation links:** the RSVP page accepts a `?name=` URL
+parameter that skips the lookup step entirely — useful when you send out
+invitations, since guests won't have to guess how much of their name we're
+expecting (middle names, etc.). Build one by URL-encoding the exact `Name`
+value from `GuestList` (or, for a couple, the `"First & First Last"` form)
+and appending it, e.g.:
+
+```
+https://christinawlindberg.github.io/wedding/rsvp.html?name=Jane%20Smith
+https://christinawlindberg.github.io/wedding/rsvp.html?name=John%20%26%20Jane%20Smith
+```
+
+If you want a full batch of these generated from your guest list when
+you're ready to send invitations, just ask.
+
 ## 4. Host it — christinawlindberg.github.io/wedding/
 
 `christinawlindberg.github.io` currently has no custom domain attached, so a

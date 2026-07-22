@@ -112,7 +112,10 @@
     const sharedSectionDivider = document.getElementById("sharedSectionDivider");
     const plusOneField = document.getElementById("plusOneField");
     const plusOneCheckbox = document.getElementById("plusOne");
+    const plusOneDetails = document.getElementById("plusOneDetails");
     const plusOneNameInput = document.getElementById("plusOneName");
+    const plusOneDietaryInput = document.getElementById("plusOneDietary");
+    const plusOneLunchCheckbox = document.getElementById("plusOneLunch");
     const childrenField = document.getElementById("childrenField");
     const childrenInput = document.getElementById("children");
     const songRequestsInput = document.getElementById("songRequests");
@@ -121,7 +124,7 @@
     const status = document.getElementById("rsvp-status");
 
     plusOneCheckbox.addEventListener("change", () => {
-      plusOneNameInput.style.display = plusOneCheckbox.checked ? "block" : "none";
+      plusOneDetails.style.display = plusOneCheckbox.checked ? "block" : "none";
     });
 
     // Shared section (plus-one/children/etc.) and the email field show if
@@ -178,6 +181,8 @@
       });
 
       plusOneField.style.display = match.plusOneAllowed ? "block" : "none";
+      plusOneCheckbox.checked = false;
+      plusOneDetails.style.display = "none";
       childrenField.style.display = match.childrenAllowed ? "block" : "none";
 
       const shared = match.existingShared;
@@ -185,7 +190,9 @@
         if (match.plusOneAllowed) {
           plusOneCheckbox.checked = shared.plusOne === "Yes";
           plusOneNameInput.value = shared.plusOneName || "";
-          plusOneNameInput.style.display = plusOneCheckbox.checked ? "block" : "none";
+          plusOneDietaryInput.value = shared.plusOneDietary || "";
+          plusOneLunchCheckbox.checked = shared.plusOneLunch === "Yes";
+          plusOneDetails.style.display = plusOneCheckbox.checked ? "block" : "none";
         }
         if (match.childrenAllowed) {
           childrenInput.value = shared.children || "";

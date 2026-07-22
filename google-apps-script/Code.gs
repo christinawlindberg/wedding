@@ -18,7 +18,7 @@
 //      shares one plus-one/children answer.
 //
 // 2. "RSVPs" — where submitted responses land, header row:
-//      PartyID | Name | Email | Attending | Dietary | Buffet | DeclineNote | PlusOne | PlusOneName | Children | SongRequests | Notes | Timestamp
+//      PartyID | Name | Email | Attending | Dietary | Buffet | DeclineNote | PlusOne | PlusOneName | PlusOneDietary | PlusOneLunch | Children | SongRequests | Notes | Timestamp
 //    You don't need to create rows here yourself — doPost fills them in,
 //    one row per person (so a couple's joint RSVP still produces two rows,
 //    sharing PartyID and the PlusOne/Children/etc. columns).
@@ -131,6 +131,8 @@ function buildPartyResult(party, rsvps) {
     existingShared: sharedSourceRow ? {
       plusOne: sharedSourceRow["PlusOne"],
       plusOneName: sharedSourceRow["PlusOneName"],
+      plusOneDietary: sharedSourceRow["PlusOneDietary"],
+      plusOneLunch: sharedSourceRow["PlusOneLunch"],
       children: sharedSourceRow["Children"],
       songRequests: sharedSourceRow["SongRequests"],
       notes: sharedSourceRow["Notes"],
@@ -185,6 +187,8 @@ function doPost(e) {
   const shared = {
     PlusOne: data.plusOne || "No",
     PlusOneName: data.plusOneName || "",
+    PlusOneDietary: data.plusOneDietary || "",
+    PlusOneLunch: data.plusOneLunch || "No",
     Children: data.children || "",
     SongRequests: data.songRequests || "",
     Notes: data.notes || "",
@@ -228,6 +232,8 @@ function doPost(e) {
         case "DeclineNote": return member.declineNote || "";
         case "PlusOne": return shared.PlusOne;
         case "PlusOneName": return shared.PlusOneName;
+        case "PlusOneDietary": return shared.PlusOneDietary;
+        case "PlusOneLunch": return shared.PlusOneLunch;
         case "Children": return shared.Children;
         case "SongRequests": return shared.SongRequests;
         case "Notes": return shared.Notes;

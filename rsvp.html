@@ -122,12 +122,9 @@
                 <input type="text" class="member-dietary-field" placeholder="e.g. nut allergy, gluten-free, vegan">
               </div>
 
-              <div class="field member-lunch-wrap buffet-callout" style="display: none;">
-                <label>
-                  <input type="checkbox" class="member-lunch-field" value="Yes">
-                  Interested in attending the Sunday Fish Buffet Lunch?
-                </label>
-                <p class="buffet-callout-note">Sunday the 5th at 12pm at R&oslash;geriet, Snogeb&aelig;k — see the <a href="details.html">details page</a> for more.</p>
+              <div class="field member-lunch-wrap" style="display: none;">
+                <label><input type="checkbox" class="member-lunch-field" value="Yes"> Interested in attending the Sunday Fish Buffet Lunch?</label>
+                <p class="muted" style="font-size: 0.85rem; margin-top: 0.4rem;">Sunday the 5th at 12pm at R&oslash;geriet, Snogeb&aelig;k — see the <a href="details.html">details page</a> for more.</p>
               </div>
 
               <div class="field member-decline-note-wrap" style="display: none;">
@@ -140,7 +137,11 @@
           <div id="attending-details" style="display: none;">
             <div id="plusOneField" class="field" style="display: none;">
               <label><input type="checkbox" id="plusOne" name="plusOne" value="Yes"> Bringing a plus-one</label>
-              <input type="text" id="plusOneName" name="plusOneName" placeholder="Plus-one's name" style="margin-top: 0.5rem; display: none;">
+              <div id="plusOneDetails" style="margin-top: 0.5rem; display: none;">
+                <input type="text" id="plusOneName" name="plusOneName" placeholder="Plus-one's name">
+                <input type="text" id="plusOneDietary" name="plusOneDietary" placeholder="Plus-one's dietary restrictions / preferences" style="margin-top: 0.5rem;">
+                <label style="margin-top: 0.5rem;"><input type="checkbox" id="plusOneLunch" name="plusOneLunch" value="Yes"> Plus-one interested in attending the Sunday Fish Buffet Lunch?</label>
+              </div>
             </div>
 
             <div id="childrenField" class="field" style="display: none;">

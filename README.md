@@ -14,13 +14,20 @@ our-story.html     Protected: your story / family history / customs
                     (split into more pages later if it grows — copy the
                     nav + gate markup from this file into a new .html file)
 css/style.css       All styling, colors, fonts — edit variables at the top
-js/config.js        Password hash + RSVP endpoint URL — the two things you
-                    must set before launch
+js/config.js        Password hash, RSVP endpoint, contact address, deadline
+                    — everything you must set before launch
+js/site.js          Fills the contact address and RSVP deadline into every
+                    page from config.js, so each is set in one place
 js/gate.js          Password gate logic (shared by all protected pages)
 js/rsvp.js          RSVP form submission logic
 admin/generate-hash.html   Tool to generate a new password hash
 google-apps-script/Code.gs  Backend script — paste into your Google Sheet
 ```
+
+The two display fonts (Playfair Display, Cormorant Garamond) load from
+Google Fonts via a `<link>` in each page's `<head>`. If you'd rather not
+depend on a third party, download the woff2 files into `assets/fonts/` and
+replace those links with `@font-face` rules in `css/style.css`.
 
 ## 1. Add your content
 
@@ -64,13 +71,19 @@ maintain by hand, and a responses tab the script fills in automatically.
    Upload the CSV > Import location: **Replace current sheet**. Delete the
    example rows and replace with your real guest list, keeping the header
    row.
-   - `Name` must be exactly what that person would type on the RSVP form.
-     Ideally unique across the whole sheet — if two different people share
-     a name (e.g. a grandparent and grandchild), it's best to add a middle
-     name or Sr./Jr. to one of them so a lookup goes straight to the right
-     person. If you leave a duplicate name as-is, it isn't broken: the
-     guest is shown both matching parties (labeled by who else is on each
-     invitation) and picks which one they are.
+   - `Name` must be exactly what that person would type on the RSVP form,
+     and should be **unique across the whole sheet**. If two different
+     people share a name (e.g. a grandparent and grandchild), add a middle
+     name or Sr./Jr. to one of them.
+
+     Duplicates aren't silently broken, but they do degrade. If the two
+     matching invitations have *different* other members on them (say two
+     "John Smith"s, one invited alone and one with a partner), the guest is
+     shown both, labeled by who else is on each, and picks. If the two are
+     indistinguishable — two John Smiths each invited alone — the site
+     won't ask the guest to flip a coin, because a wrong guess would
+     overwrite the other person's answers. It tells them to email you
+     instead, and you add them to the sheet by hand.
    - `PartyID`: leave **blank** for a solo invitation. For a **shared
      invitation** (a couple, or a larger family group under one invite),
      give all their rows the same `PartyID` (any string, e.g. `smith`).
@@ -88,16 +101,42 @@ maintain by hand, and a responses tab the script fills in automatically.
 
    **`RSVPs`** — where submitted responses land. You don't need to add rows
    here, just create the tab with the header row:
-   `PartyID | Name | Email | Attending | Dietary | Buffet | DeclineNote | PlusOne | PlusOneName | PlusOneDietary | PlusOneLunch | Children | SongRequests | Notes | Timestamp`
+   `PartyID | PartyKey | Name | Email | Attending | Dietary | Buffet | DeclineNote | PlusOne | PlusOneName | PlusOneDietary | PlusOneLunch | Children | SongRequests | Notes | Timestamp | FirstResponded | SubmissionID`
+
+   The last few are bookkeeping columns you can ignore when reading the
+   sheet — but they do need to exist, since the script matches columns by
+   header name:
+   - `PartyKey` — which invitation the row belongs to. This is what keeps
+     two guests who happen to share a name from overwriting each other.
+   - `Timestamp` — when the row was last written.
+   - `FirstResponded` — when they *first* replied, preserved across edits,
+     so you can still see who has changed their answer since.
+   - `SubmissionID` — a one-off id the site reads back to confirm the write
+     actually landed before telling the guest it worked.
 
 2. Go to **Extensions > Apps Script**. Delete the placeholder code and paste
-   in the contents of `google-apps-script/Code.gs`.
+   in the contents of `google-apps-script/Code.gs`. Fill in the constants at
+   the top: `COUPLE_NAMES`, `CONTACT_EMAIL`, and `RSVP_DEADLINE` (leave the
+   deadline `""` to accept responses indefinitely).
 3. Click **Deploy > New deployment**. Choose type **Web app**.
    - Execute as: **Me**
    - Who has access: **Anyone**
 4. Click **Deploy**, authorize the script when prompted, and copy the
-   **Web app URL** it gives you.
+   **Web app URL** it gives you. Authorizing includes permission to send
+   mail as you — that's the confirmation email guests get after they RSVP
+   (set `SEND_CONFIRMATION_EMAILS = false` in `Code.gs` if you'd rather not).
 5. Paste that URL into `js/config.js` as `RSVP_ENDPOINT`.
+
+**Whenever you edit `Code.gs` afterwards**, saving is not enough — the live
+web app keeps serving the old version until you go to **Deploy > Manage
+deployments**, click the pencil icon, and set **Version: New version**.
+
+**A note on `SHARED_TOKEN`:** `Code.gs` and `js/config.js` each carry a
+matching token, and the endpoint ignores requests without it. This is not
+real security — the token ships inside the site's JavaScript, where anyone
+can read it. It exists because a lookup response includes guests' email
+addresses, and this keeps crawlers and idle URL-pokers from getting one.
+Change both copies together if you ever want to rotate it.
 
 **How it works:** a guest types their name and the site looks it up against
 `GuestList`. If there's no match, they see a message to check spelling or
@@ -109,6 +148,11 @@ aren't) — plus a shared section (plus-one, children, song requests) that
 only shows fields that party's row allows. Resubmitting later (e.g. plans
 change) re-matches by name and pre-fills what was already answered,
 updating the existing row(s) in `RSVPs` instead of creating new ones.
+
+Once submitted, the site reads the response back out of the sheet before it
+tells the guest anything — so "Thank you" means the row is really there,
+not just that the request was sent. It then shows a summary of what was
+recorded, and `Code.gs` emails the party a copy.
 
 If you ever change the RSVP form's fields, update `rsvp.html`, `js/rsvp.js`,
 and both `doGet`/`doPost` in `Code.gs` to match.
@@ -158,14 +202,26 @@ a CNAME DNS record at your registrar — ask if you want help with that then.
 - [ ] Replace all placeholder text and images
 - [ ] Set the real password in `js/config.js` (and remember to actually
       tell guests what it is, e.g. in the invitation email)
-- [ ] Set `RSVP_ENDPOINT` in `js/config.js`
+- [ ] Set `RSVP_ENDPOINT` and `CONTACT_EMAIL` in `js/config.js`
+- [ ] Set the deadline in **both** places: `RSVP_DEADLINE_TEXT` in
+      `js/config.js` (what guests see) and `RSVP_DEADLINE` in `Code.gs`
+      (what's actually enforced)
+- [ ] Fill in `COUPLE_NAMES`, `CONTACT_EMAIL` and `SITE_URL` in `Code.gs` —
+      they appear in the confirmation email guests receive
+- [ ] Add an `og:image` to `index.html` once you have a photo, so the link
+      previews with an image when guests forward it
 - [ ] Fill in `GuestList` with everyone you're inviting before sending
       invitations — anyone not on it can't RSVP
 - [ ] Test the full flow yourself: visit the public page, click through to
       a protected page, enter the password, look yourself up on the RSVP
-      page (add yourself to `GuestList` first), submit, confirm it shows up
-      in `RSVPs`, then look yourself up again and confirm your answers are
-      pre-filled and resubmitting updates the same row
+      page (add yourself to `GuestList` first), submit, confirm you get the
+      summary *and* the confirmation email, confirm it shows up in `RSVPs`,
+      then look yourself up again and confirm your answers are pre-filled
+      and resubmitting updates the same row
 - [ ] Also test looking up a name that isn't in `GuestList` — confirm you
       get the "couldn't find that name" message
-- [ ] Set an RSVP deadline in `rsvp.html`
+- [ ] Test declining: accept first with dietary needs and the Sunday lunch
+      box ticked, submit, then change to decline and resubmit — the sheet
+      should clear those, not keep counting you for lunch
+- [ ] Once the deadline has been set and passed, confirm the form refuses
+      new responses (temporarily set `RSVP_DEADLINE` to yesterday to check)

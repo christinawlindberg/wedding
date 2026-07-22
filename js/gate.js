@@ -6,7 +6,11 @@
 // not from a determined snoop. Don't put anything in protected pages you
 // wouldn't want a sufficiently curious guest's plus-one to stumble on.
 (function () {
-  const SESSION_KEY = "wedding_gate_ok";
+  // localStorage, not sessionStorage: guests come back to this site over
+  // months, and sessionStorage makes them re-enter the password every time
+  // they close the browser — which turns into "what was the password
+  // again?" emails.
+  const STORAGE_KEY = "wedding_gate_ok";
 
   async function sha256Hex(text) {
     const data = new TextEncoder().encode(text);
@@ -27,7 +31,7 @@
   async function tryUnlock(password, errorEl) {
     const hash = await sha256Hex(password.trim());
     if (hash === SITE_CONFIG.PASSWORD_HASH) {
-      sessionStorage.setItem(SESSION_KEY, "1");
+      try { localStorage.setItem(STORAGE_KEY, "1"); } catch (err) { /* private mode */ }
       reveal();
     } else if (errorEl) {
       errorEl.textContent = "That password doesn't match. Please check the invitation email and try again.";
@@ -35,7 +39,13 @@
   }
 
   document.addEventListener("DOMContentLoaded", () => {
-    if (sessionStorage.getItem(SESSION_KEY) === "1") {
+    let unlocked = false;
+    try {
+      unlocked = localStorage.getItem(STORAGE_KEY) === "1" ||
+        sessionStorage.getItem(STORAGE_KEY) === "1"; // pre-localStorage visits
+    } catch (err) { /* storage unavailable — fall through to the prompt */ }
+
+    if (unlocked) {
       reveal();
       return;
     }

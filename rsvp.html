@@ -4,7 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<title>RSVP — [Partner 1] & [Partner 2]</title>
+<title>RSVP &mdash; [Partner 1] &amp; [Partner 2]</title>
+<meta name="description" content="RSVP for [Partner 1] &amp; [Partner 2]'s wedding.">
+<meta name="theme-color" content="#fdfaf6">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Playfair+Display:wght@500;600&display=swap">
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -14,9 +20,9 @@
     <a class="brand" href="index.html">[Partner 1] &amp; [Partner 2]</a>
     <ul>
       <li><a href="index.html">Home</a></li>
-      <li><a href="details.html">Details <span class="lock-icon">🔒</span></a></li>
-      <li><a href="rsvp.html">RSVP <span class="lock-icon">🔒</span></a></li>
-      <li><a href="our-story.html">Our Story <span class="lock-icon">🔒</span></a></li>
+      <li><a href="details.html">Details <span class="lock-icon" aria-hidden="true">🔒</span></a></li>
+      <li><a href="rsvp.html" aria-current="page">RSVP <span class="lock-icon" aria-hidden="true">🔒</span></a></li>
+      <li><a href="our-story.html">Our Story <span class="lock-icon" aria-hidden="true">🔒</span></a></li>
     </ul>
   </div>
 </nav>
@@ -28,25 +34,25 @@
     <form id="gate-form">
       <div class="field">
         <label for="gate-password">Password</label>
-        <input type="password" id="gate-password" name="password" autocomplete="off" required>
+        <input type="password" id="gate-password" name="password" autocomplete="current-password" autofocus required>
       </div>
       <button type="submit" class="btn">Unlock</button>
-      <p id="gate-error" class="form-status error"></p>
+      <p id="gate-error" class="form-status error" role="status"></p>
     </form>
   </div>
 </div>
 
 <main data-protected-content>
-  <header class="hero">
+  <header class="hero hero-compact">
     <div class="wrap">
-      <div class="eyebrow">Please Respond By [RSVP Deadline]</div>
+      <div class="eyebrow">Please Respond By <span data-rsvp-deadline>[RSVP Deadline]</span></div>
       <h1>RSVP</h1>
     </div>
   </header>
 
   <section class="section">
     <div class="wrap">
-      <div class="card" style="max-width: 560px; margin: 0 auto;">
+      <div class="card form-card">
 
         <!-- Step 1: find the guest's invitation -->
         <div id="lookup-step">
@@ -58,22 +64,23 @@
           <form id="lookup-form">
             <div class="field">
               <label for="lookupName">Full Name</label>
-              <input type="text" id="lookupName" name="lookupName" required>
+              <input type="text" id="lookupName" name="lookupName" autocomplete="name" required>
             </div>
             <button type="submit" class="btn">Find My Invitation</button>
-            <p id="lookup-status" class="form-status"></p>
+            <p id="lookup-status" class="form-status" role="status"></p>
           </form>
         </div>
 
         <!-- Shown instead of step 2 if the typed name matches more than one
              party (e.g. two guests happen to share a name) — guest picks
              which one they are before the form unlocks. -->
-        <div id="disambiguation-step" style="display: none;">
+        <div id="disambiguation-step" hidden>
           <p class="muted">
             More than one person on the guest list has that name. Which one
             are you?
           </p>
           <div id="disambiguation-options"></div>
+          <p><button type="button" class="link-button" data-start-over>← That's not me, start over</button></p>
         </div>
 
         <!-- Step 2: the actual RSVP, shown once matched. Guests who share an
@@ -83,24 +90,29 @@
              dietary needs, while email/plus-one/children/etc. are shared —
              one email per party is duplicated onto every member's row when
              submitted (see js/rsvp.js). -->
-        <form id="rsvp-form" style="display: none;">
+        <form id="rsvp-form" hidden>
           <p class="muted">You're on the list, <span id="party-names"></span>!</p>
+          <p class="muted small">
+            Not you? <button type="button" class="link-button" data-start-over>Look up a different name</button>
+          </p>
 
           <input type="hidden" id="partyId" name="partyId">
+          <input type="hidden" id="partyKey" name="partyKey">
 
           <div id="members-container"></div>
 
           <!-- Separates each person's individual answers above from the
                party-level fields below — shown/hidden together with them
                by refreshSharedVisibility in js/rsvp.js. -->
-          <hr id="sharedSectionDivider" class="section-divider" style="display: none;">
+          <hr id="sharedSectionDivider" class="section-divider" hidden>
 
-          <!-- Only needed to send updates, so only collected if at least
-               one member of the party is accepting — see refreshSharedVisibility
-               in js/rsvp.js. -->
-          <div id="sharedEmailField" class="field" style="display: none;">
+          <!-- Only needed to send a confirmation and any updates, so only
+               collected if at least one member of the party is accepting —
+               see refreshSharedVisibility in js/rsvp.js. -->
+          <div id="sharedEmailField" class="field" hidden>
             <label for="sharedEmail">Email</label>
-            <input type="email" id="sharedEmail">
+            <input type="email" id="sharedEmail" autocomplete="email">
+            <p class="field-hint">We'll send a copy of your answers here.</p>
           </div>
 
           <template id="member-template">
@@ -110,41 +122,47 @@
               <input type="hidden" class="member-email-field">
 
               <div class="field">
-                <label>Will you be attending?</label>
-                <div class="radio-row">
+                <span class="field-label member-attending-label">Will you be attending?</span>
+                <div class="radio-row" role="group">
                   <label><input type="radio" class="member-attending-radio" value="Yes"> Joyfully accept</label>
                   <label><input type="radio" class="member-attending-radio" value="No"> Regretfully decline</label>
                 </div>
               </div>
 
-              <div class="field member-dietary-wrap" style="display: none;">
-                <label>Dietary Restrictions / Preferences</label>
+              <div class="field member-dietary-wrap" hidden>
+                <label class="member-dietary-label">Dietary Restrictions / Preferences</label>
                 <input type="text" class="member-dietary-field" placeholder="e.g. nut allergy, gluten-free, vegan">
               </div>
 
-              <div class="field member-lunch-wrap" style="display: none;">
-                <label><input type="checkbox" class="member-lunch-field" value="Yes"> Interested in attending the Sunday Fish Buffet Lunch?</label>
-                <p class="muted" style="font-size: 0.85rem; margin-top: 0.4rem;">Sunday the 5th at 12pm at R&oslash;geriet, Snogeb&aelig;k — see the <a href="details.html">details page</a> for more.</p>
+              <div class="field member-lunch-wrap" hidden>
+                <label class="choice-label"><input type="checkbox" class="member-lunch-field" value="Yes"> Interested in attending the Sunday Fish Buffet Lunch?</label>
+                <p class="field-hint">Sunday the 5th at 12pm at R&oslash;geriet, Snogeb&aelig;k — see the <a href="details.html" target="_blank" rel="noopener">details page</a> for more (opens in a new tab so you don't lose your answers).</p>
               </div>
 
-              <div class="field member-decline-note-wrap" style="display: none;">
-                <label>Leave a note?</label>
-                <textarea class="member-decline-note-field" rows="2"></textarea>
+              <div class="field member-decline-note-wrap" hidden>
+                <label class="member-decline-note-label">Leave a note?</label>
+                <textarea class="member-decline-note-field" rows="2" placeholder="Optional — we'll miss you!"></textarea>
               </div>
             </div>
           </template>
 
-          <div id="attending-details" style="display: none;">
-            <div id="plusOneField" class="field" style="display: none;">
-              <label><input type="checkbox" id="plusOne" name="plusOne" value="Yes"> Bringing a plus-one</label>
-              <div id="plusOneDetails" style="margin-top: 0.5rem; display: none;">
-                <input type="text" id="plusOneName" name="plusOneName" placeholder="Plus-one's name">
-                <input type="text" id="plusOneDietary" name="plusOneDietary" placeholder="Plus-one's dietary restrictions / preferences" style="margin-top: 0.5rem;">
-                <label style="margin-top: 0.5rem;"><input type="checkbox" id="plusOneLunch" name="plusOneLunch" value="Yes"> Plus-one interested in attending the Sunday Fish Buffet Lunch?</label>
+          <div id="attending-details" hidden>
+            <div id="plusOneField" class="field" hidden>
+              <label class="choice-label"><input type="checkbox" id="plusOne" name="plusOne" value="Yes"> Bringing a plus-one</label>
+              <div id="plusOneDetails" class="nested-fields" hidden>
+                <div class="field">
+                  <label for="plusOneName">Plus-one's name</label>
+                  <input type="text" id="plusOneName" name="plusOneName">
+                </div>
+                <div class="field">
+                  <label for="plusOneDietary">Plus-one's dietary restrictions / preferences</label>
+                  <input type="text" id="plusOneDietary" name="plusOneDietary" placeholder="e.g. nut allergy, gluten-free, vegan">
+                </div>
+                <label class="choice-label"><input type="checkbox" id="plusOneLunch" name="plusOneLunch" value="Yes"> Plus-one interested in attending the Sunday Fish Buffet Lunch?</label>
               </div>
             </div>
 
-            <div id="childrenField" class="field" style="display: none;">
+            <div id="childrenField" class="field" hidden>
               <label for="children">Children Attending</label>
               <input type="text" id="children" name="children" placeholder="e.g. names and ages, or leave blank if none">
             </div>
@@ -161,8 +179,19 @@
           </div>
 
           <button type="submit" class="btn">Submit RSVP</button>
-          <p id="rsvp-status" class="form-status"></p>
+          <p id="rsvp-status" class="form-status" role="status"></p>
         </form>
+
+        <!-- Shown in place of the form once a submission has been confirmed
+             (see verifySubmission in js/rsvp.js) so guests get a receipt
+             rather than a filled-in form and a green line of text. -->
+        <div id="rsvp-summary" hidden>
+          <h2 class="summary-heading">Thank you!</h2>
+          <p class="muted">Here's what we've got — a copy is on its way to <span id="summary-email"></span>.</p>
+          <ul id="summary-list" class="summary-list"></ul>
+          <p class="muted small">Plans change — you can come back and edit this any time before the deadline.</p>
+          <button type="button" class="btn" id="edit-response">Edit my response</button>
+        </div>
       </div>
     </div>
   </section>
@@ -170,11 +199,12 @@
 
 <footer class="site-footer">
   <div class="wrap">
-    Questions? Reach us at [email address]
+    Questions? Reach us at <a data-contact-email href="#">[email address]</a>
   </div>
 </footer>
 
 <script src="js/config.js"></script>
+<script src="js/site.js"></script>
 <script src="js/gate.js"></script>
 <script src="js/rsvp.js"></script>
 </body>

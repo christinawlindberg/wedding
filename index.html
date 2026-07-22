@@ -3,7 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>[Partner 1] & [Partner 2] — We're Getting Married</title>
+<title>[Partner 1] &amp; [Partner 2] &mdash; We're Getting Married</title>
+<meta name="description" content="[Partner 1] &amp; [Partner 2] are getting married on [Month Day, Year] in [City, State/Country]. Travel, accommodation and RSVP details for our guests.">
+<meta name="theme-color" content="#fdfaf6">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+
+<!-- Wedding links get texted and forwarded around; without these the link
+     previews as a bare URL. Add an og:image once you have a photo you like:
+     <meta property="og:image" content="https://christinawlindberg.github.io/wedding/assets/images/hero.jpg"> -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="[Partner 1] &amp; [Partner 2] — We're Getting Married">
+<meta property="og:description" content="[Month Day, Year] · [City, State/Country]. Travel, accommodation and RSVP details for our guests.">
+<meta property="og:url" content="https://christinawlindberg.github.io/wedding/">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Playfair+Display:wght@500;600&display=swap">
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -12,10 +28,10 @@
   <div class="wrap">
     <a class="brand" href="index.html">[Partner 1] &amp; [Partner 2]</a>
     <ul>
-      <li><a href="index.html">Home</a></li>
-      <li><a href="details.html">Details <span class="lock-icon">🔒</span></a></li>
-      <li><a href="rsvp.html">RSVP <span class="lock-icon">🔒</span></a></li>
-      <li><a href="our-story.html">Our Story <span class="lock-icon">🔒</span></a></li>
+      <li><a href="index.html" aria-current="page">Home</a></li>
+      <li><a href="details.html">Details <span class="lock-icon" aria-hidden="true">🔒</span></a></li>
+      <li><a href="rsvp.html">RSVP <span class="lock-icon" aria-hidden="true">🔒</span></a></li>
+      <li><a href="our-story.html">Our Story <span class="lock-icon" aria-hidden="true">🔒</span></a></li>
     </ul>
   </div>
 </nav>
@@ -87,9 +103,11 @@
 
 <footer class="site-footer">
   <div class="wrap">
-    Questions? Reach us at [email address] &middot; [Month Year]
+    Questions? Reach us at <a data-contact-email href="#">[email address]</a> &middot; [Month Year]
   </div>
 </footer>
 
+<script src="js/config.js"></script>
+<script src="js/site.js"></script>
 </body>
 </html>

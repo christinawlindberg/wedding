@@ -4,7 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<title>Wedding Details — [Partner 1] & [Partner 2]</title>
+<title>Wedding Details &mdash; [Partner 1] &amp; [Partner 2]</title>
+<meta name="theme-color" content="#fdfaf6">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Playfair+Display:wght@500;600&display=swap">
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -14,9 +19,9 @@
     <a class="brand" href="index.html">[Partner 1] &amp; [Partner 2]</a>
     <ul>
       <li><a href="index.html">Home</a></li>
-      <li><a href="details.html">Details <span class="lock-icon">🔒</span></a></li>
-      <li><a href="rsvp.html">RSVP <span class="lock-icon">🔒</span></a></li>
-      <li><a href="our-story.html">Our Story <span class="lock-icon">🔒</span></a></li>
+      <li><a href="details.html" aria-current="page">Details <span class="lock-icon" aria-hidden="true">🔒</span></a></li>
+      <li><a href="rsvp.html">RSVP <span class="lock-icon" aria-hidden="true">🔒</span></a></li>
+      <li><a href="our-story.html">Our Story <span class="lock-icon" aria-hidden="true">🔒</span></a></li>
     </ul>
   </div>
 </nav>
@@ -28,10 +33,10 @@
     <form id="gate-form">
       <div class="field">
         <label for="gate-password">Password</label>
-        <input type="password" id="gate-password" name="password" autocomplete="off" required>
+        <input type="password" id="gate-password" name="password" autocomplete="current-password" autofocus required>
       </div>
       <button type="submit" class="btn">Unlock</button>
-      <p id="gate-error" class="form-status error"></p>
+      <p id="gate-error" class="form-status error" role="status"></p>
     </form>
   </div>
 </div>
@@ -98,11 +103,12 @@
 
 <footer class="site-footer">
   <div class="wrap">
-    Questions? Reach us at [email address]
+    Questions? Reach us at <a data-contact-email href="#">[email address]</a>
   </div>
 </footer>
 
 <script src="js/config.js"></script>
+<script src="js/site.js"></script>
 <script src="js/gate.js"></script>
 </body>
 </html>

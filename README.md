@@ -1,40 +1,50 @@
 # Wedding Website
 
-A static site: a public info page, plus a small set of password-protected
-pages (details, RSVP, our story) for invited guests only. No build step —
-open any `.html` file, or push the folder to GitHub Pages.
+A static, six-page site for John & Christina's wedding. Five pages are
+public (Home, Schedule, About, Travel, Explore); the RSVP page is password
+protected. No build step — open any `.html` file, or push the folder to
+GitHub Pages.
 
 ## Structure
 
 ```
-index.html         Public: welcome + travel info (hotels, transport, activities)
-details.html       Protected: schedule, venue, dress code
+index.html         Home: hero photo + how we met
+schedule.html      Friday/Saturday/Sunday events, with Map + Add-to-calendar
+about.html         Why Bornholm, the church, the venue, Danish traditions
+travel.html        Getting to Bornholm & Snogebæk, where to stay
+explore.html       Local food & experiences
 rsvp.html          Protected: RSVP form (writes to a Google Sheet)
-our-story.html     Protected: your story / family history / customs
-                    (split into more pages later if it grows — copy the
-                    nav + gate markup from this file into a new .html file)
-css/style.css       All styling, colors, fonts — edit variables at the top
-js/config.js        Password hash, RSVP endpoint, contact address, deadline
-                    — everything you must set before launch
-js/site.js          Fills the contact address and RSVP deadline into every
-                    page from config.js, so each is set in one place
-js/gate.js          Password gate logic (shared by all protected pages)
-js/rsvp.js          RSVP form submission logic
-admin/generate-hash.html   Tool to generate a new password hash
-google-apps-script/Code.gs  Backend script — paste into your Google Sheet
+css/style.css      All styling — edit the variables at the top (accent, etc.)
+js/config.js       Password hash, RSVP endpoint, contact email, deadline —
+                   the values you must set before launch
+js/site.js         Fills the contact address + RSVP deadline from config.js
+js/gate.js         Password gate logic (used only by rsvp.html now)
+js/rsvp.js         RSVP form submission logic
+assets/images/home-hero.jpg  The Home hero background photo
+admin/generate-hash.html     Tool to generate a new password hash
+google-apps-script/Code.gs   Backend script — paste into your Google Sheet
 ```
 
-The two display fonts (Playfair Display, Cormorant Garamond) load from
-Google Fonts via a `<link>` in each page's `<head>`. If you'd rather not
-depend on a third party, download the woff2 files into `assets/fonts/` and
-replace those links with `@font-face` rules in `css/style.css`.
+The type is the device's own system sans-serif — nothing to download, no
+third-party font dependency. Colors (including the Baltic-blue accent) are
+CSS variables at the top of `css/style.css`.
 
-## 1. Add your content
+**Only `rsvp.html` is gated** now; the other pages are public (all pages
+are `noindex` so they stay out of search results). To gate another page,
+copy the `#gate` block and the `data-protected-content` wrapper from
+`rsvp.html` and add `js/gate.js` to that page's scripts.
 
-Replace bracketed placeholders (`[Partner 1]`, `[Month Day, Year]`, etc.)
-throughout the HTML files. Drop photos into `assets/images/` and reference
-them — the hero sections in `css/style.css` have a commented example under
-`.hero` showing how to swap in a background photo.
+## 1. Finish the content
+
+The pages are filled in with real copy. A few spots still need you:
+- **Home hero photo** — swap `assets/images/home-hero.jpg` for a different
+  shot if you like (the CSS points `.hero-photo` at that path).
+- **Schedule** — the Friday event says "Location to be announced," and the
+  Saturday ceremony/dinner show "Afternoon"/"Evening"; add specifics when
+  you have them.
+- **A Bornholm map** on the Travel page, if you want one.
+- Set `CONTACT_EMAIL` and `RSVP_DEADLINE_TEXT` in `js/config.js` (until
+  then the footer email shows as plain text, not a link).
 
 ## 2. Set the guest password
 

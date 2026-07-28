@@ -1,534 +1,265 @@
 /* =========================================================
-   Wedding site — shared styles
-   Change the variables below to reskin the whole site.
-   Swap the hero background images by editing the
-   `background-image: url(...)` lines marked PHOTO PLACEHOLDER.
-
-   The two display fonts are loaded from Google Fonts by a <link> in each
-   page's <head>. If you'd rather not depend on a third party, download the
-   woff2 files into assets/fonts/ and swap those links for @font-face rules
-   here — the rest of the stylesheet doesn't care which way they arrive.
+   Wedding site — minimal theme
+   System sans-serif, white background, Baltic-blue accent.
+   Change the accent and neutrals in the :root block below.
    ========================================================= */
 
 :root {
-  --color-bg: #fdfaf6;
-  --color-surface: #ffffff;
-  --color-text: #2f2a26;
-  --color-muted: #74695f;
-  /* 5.15:1 on white — the old #a9714b sat at 4.08 and failed WCAG AA for
-     both link text and the white text on .btn. */
-  --color-accent: #96613d;
-  --color-accent-soft: #e8d9c9;
-  /* Decorative rules and card edges. */
-  --color-border: #e6ddd2;
-  /* Form control edges. These need 3:1 against the page to be perceivable;
-     the soft border above manages 1.34 and made inputs read as invisible. */
-  --color-border-control: #9e8b74;
+  --accent: #35586e;         /* Baltic blue */
+  --accent-soft: #eaf0f4;
+  --ink: #232323;
+  --muted: #666666;
+  --paper: #ffffff;
+  --surface: #ffffff;
+  --hairline: #e6e6e6;
+  --line: #efefef;
 
-  --font-display: "Playfair Display", Georgia, "Times New Roman", serif;
-  --font-body: "Cormorant Garamond", Georgia, serif;
-  --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-
-  --max-width: 960px;
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --max-width: 48rem;
 }
 
-* {
-  box-sizing: border-box;
+@media (prefers-color-scheme: dark) {
+  :root {
+    --accent: #8fb4c8;
+    --accent-soft: #20303a;
+    --ink: #ededed;
+    --muted: #a6a6a6;
+    --paper: #151515;
+    --surface: #1d1d1d;
+    --hairline: #333333;
+    --line: #2a2a2a;
+  }
 }
 
-html, body {
-  margin: 0;
-  padding: 0;
-}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
 
 body {
-  background: var(--color-bg);
-  color: var(--color-text);
-  font-family: var(--font-body);
-  font-size: 19px;
-  line-height: 1.6;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 20px;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* Several elements are shown and hidden by toggling the `hidden` attribute
-   (see js/rsvp.js). Without this, any rule that sets `display` on one of
-   them would quietly override the UA default and leave it on screen. */
-[hidden] {
-  display: none !important;
-}
+a { color: var(--accent); text-underline-offset: 2px; }
 
-h1, h2, h3 {
-  font-family: var(--font-display);
-  font-weight: 600;
-  color: var(--color-text);
-  line-height: 1.2;
-}
+.wrap { max-width: var(--max-width); margin: 0 auto; padding: 0 1.4rem; }
+.section { padding: 1rem 0 2rem; }
+.muted { color: var(--muted); }
+.small { font-size: 0.9rem; }
+.center { text-align: center; }
 
-h1 { font-size: 3rem; }
-h2 { font-size: 2rem; margin-top: 0; }
-h3 { font-size: 1.4rem; }
-
-a {
-  color: var(--color-accent);
-}
-
-p {
-  color: var(--color-text);
-}
-
-.muted {
-  color: var(--color-muted);
-}
-
-/* An <a> that has no href yet — see js/site.js. Renders as plain text so a
-   placeholder doesn't masquerade as a broken link. */
-.not-a-link {
-  color: inherit;
-  text-decoration: none;
-}
-
-.small {
-  font-size: 0.9rem;
-}
-
-/* Keyboard focus has to stay visible everywhere — the accent ring reads as
-   deliberate rather than the browser default fighting the page. */
-a:focus-visible,
-button:focus-visible,
-input:focus-visible,
-textarea:focus-visible,
-select:focus-visible {
-  outline: 2px solid var(--color-accent);
-  outline-offset: 2px;
-}
-
-/* ---------- layout ---------- */
-
-.wrap {
-  max-width: var(--max-width);
-  margin: 0 auto;
-  padding: 0 1.5rem;
-}
-
-.section {
-  padding: 4rem 0;
-}
-
-.section + .section {
-  border-top: 1px solid var(--color-border);
-}
-
-.card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  padding: 2rem;
-}
-
-.form-card {
-  max-width: 560px;
-  margin: 0 auto;
-}
-
-.grid {
-  display: grid;
-  gap: 1.5rem;
-}
-
-.grid-2 {
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-}
+/* Elements toggled via the hidden attribute (RSVP form) must stay hidden. */
+[hidden] { display: none !important; }
 
 /* ---------- nav ---------- */
-
 .site-nav {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  /* Opaque, not translucent: at narrow widths this bar is tall enough that
-     form labels were visibly ghosting through it while scrolling. */
-  background: var(--color-bg);
-  border-bottom: 1px solid var(--color-border);
+  position: sticky; top: 0; z-index: 20;
+  background: color-mix(in srgb, var(--paper) 92%, transparent);
+  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--hairline);
 }
-
 .site-nav .wrap {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-top: 1rem;
-  padding-bottom: 1rem;
-  flex-wrap: wrap;
-  gap: 0.75rem;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 0.75rem; padding-top: 0.85rem; padding-bottom: 0.85rem;
+  flex-wrap: wrap; max-width: 62rem;
 }
-
-.site-nav .brand {
-  font-family: var(--font-display);
-  font-size: 1.3rem;
-  text-decoration: none;
-  color: var(--color-text);
+.brand {
+  font-size: 1.2rem; color: var(--ink); text-decoration: none; white-space: nowrap;
 }
-
 .site-nav ul {
-  list-style: none;
-  display: flex;
-  gap: 1.5rem;
-  margin: 0;
-  padding: 0;
-  font-family: var(--font-ui);
-  font-size: 0.9rem;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
+  list-style: none; display: flex; gap: 1.25rem; margin: 0; padding: 0;
+  font-size: 0.78rem; letter-spacing: 0.06em; text-transform: uppercase;
 }
-
-/* Keeps the lock glyph on the same line as the word it belongs to. */
-.site-nav li {
-  white-space: nowrap;
-}
-
+.site-nav li { white-space: nowrap; }
 .site-nav a {
-  text-decoration: none;
-  color: var(--color-text);
+  color: var(--ink); text-decoration: none;
+  padding-bottom: 2px; border-bottom: 2px solid transparent;
 }
+.site-nav a:hover { color: var(--accent); }
+.site-nav a[aria-current="page"] { color: var(--accent); border-bottom-color: var(--accent); }
+.lock-icon { opacity: 0.5; font-size: 0.8em; }
 
-.site-nav a:hover {
-  color: var(--color-accent);
+/* ---------- headings ---------- */
+.eyebrow {
+  text-transform: uppercase; letter-spacing: 0.2em;
+  font-size: 0.7rem; color: var(--accent); margin: 0 0 0.8rem;
 }
+h1 { font-weight: 600; line-height: 1.06; font-size: clamp(2.2rem, 5.5vw, 3rem); margin: 0 0 0.4rem; letter-spacing: 0.01em; }
+h2 { font-weight: 600; font-size: clamp(1.5rem, 3.4vw, 1.9rem); line-height: 1.15; margin: 2.6rem 0 0.2rem; }
+h3 { font-weight: 600; font-size: 1.25rem; margin: 1.6rem 0 0.3rem; }
+h1, h2, h3 { text-wrap: balance; }
+.sub { font-style: italic; color: var(--muted); font-size: 1.05rem; margin: 0.1rem 0 0; }
+p { margin: 0.9rem 0; }
+.lede { font-size: 1.16rem; }
+/* First section header after the nav shouldn't leave a big gap. */
+.wrap > h2:first-child, .wrap > .sched-day:first-child { margin-top: 1rem; }
 
-.site-nav a[aria-current="page"] {
-  color: var(--color-accent);
-  border-bottom: 2px solid var(--color-accent);
-  padding-bottom: 2px;
+/* ---------- home hero ---------- */
+.hero { text-align: center; padding: 3.5rem 0 1rem; }
+.hero .kicker {
+  text-transform: uppercase; letter-spacing: 0.22em;
+  font-size: 0.72rem; color: var(--accent); margin: 0 0 1.1rem;
 }
+.hero h1 { font-size: clamp(2.8rem, 8vw, 4.2rem); line-height: 1.02; margin: 0; }
+.hero .date { font-size: 1.25rem; color: var(--muted); margin-top: 0.9rem; }
+.hr-mark { width: 3.2rem; height: 2px; background: var(--accent); border: 0; margin: 1.5rem auto; opacity: 0.7; }
 
-.lock-icon {
-  opacity: 0.5;
-  font-size: 0.8em;
-}
-
-/* ---------- hero ---------- */
-
-.hero {
-  /* PHOTO PLACEHOLDER: replace with your own image, e.g.
-     background-image: linear-gradient(rgba(0,0,0,0.25), rgba(0,0,0,0.25)), url('../assets/images/hero.jpg');
-  */
-  background: linear-gradient(135deg, var(--color-accent-soft), var(--color-bg));
-  background-size: cover;
-  background-position: center;
-  padding: 6rem 0;
-  text-align: center;
-}
-
-/* The RSVP page's only job is its form, so the banner shouldn't push it a
-   full screen down. */
-.hero-compact {
-  padding: 2.5rem 0;
-}
-
-.hero-compact h1 {
-  font-size: 2.25rem;
-}
-
-.hero .eyebrow {
-  font-family: var(--font-ui);
-  text-transform: uppercase;
-  letter-spacing: 0.15em;
-  font-size: 0.85rem;
-  color: var(--color-muted);
-  margin-bottom: 1rem;
-}
-
-.hero .date {
-  font-size: 1.3rem;
-  color: var(--color-muted);
-  margin-top: 0.5rem;
-}
-
-/* ---------- footer ---------- */
-
-.site-footer {
-  padding: 3rem 0;
-  text-align: center;
-  color: var(--color-muted);
-  font-family: var(--font-ui);
-  font-size: 0.85rem;
-}
-
-/* ---------- buttons / forms ---------- */
-
-.btn {
-  display: inline-block;
-  background: var(--color-accent);
+/* Photo hero: the image is pinned so the names — and the story below —
+   scroll up over a stationary photo. iOS Safari ignores fixed attachment
+   and simply scrolls the photo, which is a fine fallback. */
+.hero-photo {
+  min-height: 82vh; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; padding: 4rem 1.5rem;
+  background-image: linear-gradient(rgba(0,0,0,0.04), rgba(0,0,0,0.04)), url("../assets/images/home-hero.jpg");
+  background-size: cover; background-position: center center; background-attachment: fixed;
   color: #fff;
-  border: none;
-  padding: 0.85rem 1.75rem;
-  border-radius: 999px;
-  font-family: var(--font-ui);
-  font-size: 0.95rem;
-  letter-spacing: 0.03em;
-  cursor: pointer;
-  text-decoration: none;
 }
+.hero-photo .kicker { color: #fff; opacity: 0.95; }
+.hero-photo h1 { color: #fff; }
+.hero-photo .date { color: #fff; opacity: 0.92; }
+.hero-photo .hr-mark { background: #fff; opacity: 0.8; }
 
-.btn:hover {
-  opacity: 0.9;
+/* ---------- callout ---------- */
+.callout {
+  background: var(--accent-soft); border: 1px solid var(--hairline);
+  border-left: 3px solid var(--accent); border-radius: 8px;
+  padding: 1rem 1.2rem; margin: 1.4rem 0;
 }
+.callout p { margin: 0.4rem 0; }
 
-.btn:disabled {
-  opacity: 0.55;
-  cursor: default;
+/* ---------- schedule (day + two-column events) ---------- */
+.sched-day {
+  text-align: center; font-weight: 600; font-size: clamp(1.5rem, 4vw, 2rem);
+  letter-spacing: 0.01em; margin: 2.8rem 0 0.4rem;
 }
+.event { display: grid; grid-template-columns: 1fr 1fr; align-items: stretch; margin: 1.8rem 0; }
+.event-left { text-align: right; padding: 0.2rem 2rem 0.2rem 0; border-right: 1px solid var(--hairline); }
+.event-right { text-align: left; padding: 0.2rem 0 0.2rem 2rem; }
+.event-title { font-weight: 600; font-size: 1.4rem; margin: 0; }
+.event-time { font-size: 0.85rem; letter-spacing: 0.04em; color: var(--muted); margin: 0.35rem 0 0; }
+.event-venue { font-size: 1.15rem; margin: 0 0 0.1rem; }
+.event-addr { margin: 0.1rem 0; font-size: 0.9rem; }
+.event-addr a { font-style: italic; }
+.event-attire { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--accent); margin: 0.6rem 0 0.3rem; }
+.event-desc { color: var(--muted); font-size: 0.98rem; margin: 0.4rem 0; }
+.event-btns { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-top: 0.9rem; }
 
-/* Full-width stacked buttons — the disambiguation picker's options. */
-.btn-block {
-  display: block;
-  width: 100%;
-  margin-bottom: 0.75rem;
+/* ---------- shared entry scale (Where to stay + Explore lists) ---------- */
+.stay { margin: 1.2rem 0; }
+.stay-item { padding: 1.3rem 0; border-top: 1px solid var(--line); }
+.stay-item:first-child { border-top: none; padding-top: 0.4rem; }
+.stay-item h3 { font-weight: 600; font-size: 1.4rem; margin: 0 0 0.2rem; }
+.stay-item .meta { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); margin: 0 0 0.5rem; }
+.stay-item p { margin: 0.5rem 0; }
+.stay-item .addr { font-size: 0.9rem; color: var(--muted); }
+
+.rec { margin: 0.4rem 0 1.4rem; padding: 0; list-style: none; display: grid; gap: 1.5rem; }
+.rec .name { display: block; font-weight: 600; font-size: 1.4rem; }
+.rec .desc { display: block; margin-top: 0.25rem; }
+
+/* ---------- numbered traditions ---------- */
+.numbered { counter-reset: trad; margin: 1.4rem 0; display: grid; gap: 1.1rem; padding: 0; }
+.numbered li { list-style: none; display: grid; grid-template-columns: 2.6rem 1fr; gap: 0.6rem; }
+.numbered li::before { counter-increment: trad; content: counter(trad); font-size: 1.9rem; line-height: 1; color: var(--accent); }
+.numbered h3 { margin: 0.1rem 0; }
+.numbered p { margin: 0.2rem 0 0; }
+
+/* ---------- bullet lists ---------- */
+.tick { list-style: none; padding: 0; margin: 1rem 0; display: grid; gap: 0.7rem; }
+.tick > li { position: relative; padding-left: 1.4rem; }
+.tick > li::before { content: ""; position: absolute; left: 0.15rem; top: 0.62em; width: 0.42rem; height: 0.42rem; background: var(--accent); border-radius: 50%; }
+
+/* ---------- buttons ---------- */
+.btn {
+  display: inline-block; background: var(--accent); color: var(--paper);
+  padding: 0.5rem 1.1rem; border-radius: 6px; border: 1px solid var(--accent);
+  font-size: 0.85rem; letter-spacing: 0.02em; text-decoration: none; cursor: pointer;
+  font-family: inherit;
 }
-
-/* An action that reads as a link: "start over", "not you?". Kept a real
-   <button> so it's reachable and announced correctly. */
+.btn:hover { opacity: 0.9; }
+.btn:disabled { opacity: 0.55; cursor: default; }
+.btn-outline { background: transparent; color: var(--accent); }
+.btn-block { display: block; width: 100%; margin-bottom: 0.75rem; }
 .link-button {
-  background: none;
-  border: none;
-  padding: 0;
-  font: inherit;
-  color: var(--color-accent);
-  text-decoration: underline;
-  cursor: pointer;
+  background: none; border: none; padding: 0; font: inherit;
+  color: var(--accent); text-decoration: underline; cursor: pointer;
 }
 
-label,
-.field-label {
-  display: block;
-  font-family: var(--font-ui);
-  font-size: 0.85rem;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-  color: var(--color-muted);
-  margin-bottom: 0.3rem;
+/* ---------- forms (RSVP + gate) ---------- */
+label, .field-label {
+  display: block; font-size: 0.78rem; text-transform: uppercase;
+  letter-spacing: 0.04em; color: var(--muted); margin-bottom: 0.3rem;
+}
+.radio-row label, .choice-label {
+  text-transform: none; font-size: 1.05rem; color: var(--ink);
+  letter-spacing: normal; display: flex; align-items: flex-start; gap: 0.5rem; margin-bottom: 0;
+}
+.choice-label input[type="checkbox"], .radio-row input[type="radio"] { margin-top: 0.35rem; flex: none; }
+.field-hint { font-size: 0.8rem; color: var(--muted); margin: 0.4rem 0 0; }
+.nested-fields { margin-top: 0.75rem; margin-left: 1.75rem; padding-left: 1rem; border-left: 2px solid var(--hairline); }
+.nested-fields .field:last-child { margin-bottom: 0; }
+
+input[type="text"], input[type="email"], input[type="number"],
+input[type="password"], select, textarea {
+  width: 100%; padding: 0.7rem 0.9rem; border: 1px solid var(--hairline);
+  border-radius: 6px; font-family: inherit; font-size: 1.05rem;
+  background: var(--surface); color: var(--ink);
+}
+.field { margin-bottom: 1.25rem; }
+.radio-row { display: flex; gap: 1.5rem; flex-wrap: wrap; }
+
+.form-status { margin-top: 1rem; font-size: 0.9rem; }
+.form-status:empty { margin-top: 0; }
+.form-status.success { color: #3f7a4a; }
+.form-status.error { color: #b4413f; }
+@media (prefers-color-scheme: dark) {
+  .form-status.success { color: #8fc79b; }
+  .form-status.error { color: #e0a0a0; }
 }
 
-/* A label attached to a checkbox or radio is a *choice*, not a field name —
-   uppercasing it turns questions like "Interested in the Sunday Fish Buffet
-   Lunch?" into three lines of shouting. */
-.radio-row label,
-.choice-label {
-  text-transform: none;
-  font-family: var(--font-body);
-  font-size: 1.05rem;
-  color: var(--color-text);
-  letter-spacing: normal;
-  display: flex;
-  align-items: flex-start;
-  gap: 0.5rem;
-  margin-bottom: 0;
-}
-
-.choice-label input[type="checkbox"],
-.radio-row input[type="radio"] {
-  /* Nudge the control onto the first line of a label that wraps. */
-  margin-top: 0.35rem;
-  flex: none;
-}
-
-.field-hint {
-  font-family: var(--font-ui);
-  font-size: 0.8rem;
-  color: var(--color-muted);
-  margin: 0.4rem 0 0;
-}
-
-/* Fields that belong to the checkbox above them, indented so they read as
-   part of that answer rather than as new party-level questions. */
-.nested-fields {
-  margin-top: 0.75rem;
-  margin-left: 1.75rem;
-  padding-left: 1rem;
-  border-left: 2px solid var(--color-border);
-}
-
-.nested-fields .field:last-child {
-  margin-bottom: 0;
-}
-
-input[type="text"],
-input[type="email"],
-input[type="number"],
-input[type="password"],
-select,
-textarea {
-  width: 100%;
-  padding: 0.7rem 0.9rem;
-  border: 1px solid var(--color-border-control);
-  border-radius: 6px;
-  font-family: var(--font-body);
-  font-size: 1.05rem;
-  background: var(--color-surface);
-  color: var(--color-text);
-}
-
-.field {
-  margin-bottom: 1.25rem;
-}
-
-.radio-row {
-  display: flex;
-  gap: 1.5rem;
-  font-family: var(--font-body);
-  flex-wrap: wrap;
-}
-
-.form-status {
-  margin-top: 1rem;
-  font-family: var(--font-ui);
-  font-size: 0.9rem;
-}
-
-.form-status:empty {
-  margin-top: 0;
-}
-
-.form-status.success { color: #4b7a4b; }
-.form-status.error { color: #a94b4b; }
+.card { background: var(--surface); border: 1px solid var(--hairline); border-radius: 12px; padding: 2rem; }
+.form-card { max-width: 560px; margin: 0 auto; }
 
 /* ---------- password gate ---------- */
+.gate { min-height: 60vh; display: flex; align-items: center; justify-content: center; padding: 2rem 1.5rem; }
+.gate-box { max-width: 380px; width: 100%; text-align: center; }
+.gate-box .field { text-align: left; }
+[data-protected-content] { display: none; }
 
-.gate {
-  min-height: 60vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem 1.5rem;
-}
+.member-block { padding-top: 1rem; margin-top: 1rem; border-top: 1px solid var(--hairline); }
+.member-block:first-child { padding-top: 0; margin-top: 0; border-top: none; }
+.member-block h3 { margin-bottom: 1rem; }
+.section-divider { border: none; border-top: 1px solid var(--hairline); margin: 1.75rem 0; }
 
-.gate-box {
-  max-width: 380px;
-  width: 100%;
-  text-align: center;
-}
+/* ---------- RSVP confirmation summary ---------- */
+.summary-heading { margin-bottom: 0.5rem; }
+.summary-list { list-style: none; padding: 0; margin: 1.25rem 0; border-top: 1px solid var(--hairline); }
+.summary-list li { padding: 0.6rem 0; border-bottom: 1px solid var(--hairline); }
+.summary-list .summary-nested { padding-left: 1.5rem; font-size: 0.9rem; color: var(--muted); border-bottom: none; padding-top: 0; }
 
-.gate-box .field {
-  text-align: left;
-}
+/* ---------- footer ---------- */
+.site-footer { border-top: 1px solid var(--line); margin-top: 3rem; padding: 2.5rem 0 3.5rem; text-align: center; font-size: 0.82rem; color: var(--muted); }
+.not-a-link { color: inherit; text-decoration: none; }
 
-.member-block {
-  padding-top: 1rem;
-  margin-top: 1rem;
-  border-top: 1px solid var(--color-border);
-}
-
-.member-block:first-child {
-  padding-top: 0;
-  margin-top: 0;
-  border-top: none;
-}
-
-.member-block h3 {
-  margin-bottom: 1rem;
-}
-
-.section-divider {
-  border: none;
-  border-top: 1px solid var(--color-border);
-  margin: 1.75rem 0;
-}
-
-/* ---------- RSVP confirmation ---------- */
-
-.summary-heading {
-  margin-bottom: 0.5rem;
-}
-
-.summary-list {
-  list-style: none;
-  padding: 0;
-  margin: 1.25rem 0;
-  border-top: 1px solid var(--color-border);
-}
-
-.summary-list li {
-  padding: 0.6rem 0;
-  border-bottom: 1px solid var(--color-border);
-}
-
-.summary-list .summary-nested {
-  padding-left: 1.5rem;
-  font-size: 0.9rem;
-  color: var(--color-muted);
-  border-bottom: none;
-  padding-top: 0;
-}
-
-[data-protected-content] {
-  display: none;
-}
-
-/* ---------- placeholder note ---------- */
-
-.placeholder-note {
-  background: var(--color-accent-soft);
-  border: 1px dashed var(--color-accent);
-  border-radius: 6px;
-  padding: 1rem 1.25rem;
-  font-family: var(--font-ui);
-  font-size: 0.85rem;
-  color: var(--color-text);
-  margin-bottom: 2rem;
+/* ---------- focus ---------- */
+a:focus-visible, button:focus-visible, input:focus-visible,
+textarea:focus-visible, select:focus-visible {
+  outline: 2px solid var(--accent); outline-offset: 3px;
 }
 
 /* ---------- narrow screens ---------- */
-
-@media (max-width: 700px) {
-  /* Wrapped onto two rows this bar takes ~15% of a phone screen, and
-     pinning it there costs more than the convenience is worth. */
-  .site-nav {
-    position: static;
-  }
-
-  /* Four labels plus four lock glyphs don't fit on one line at 375px, and
-     the glyphs were wrapping underneath each word. The nav items are still
-     marked with 🔒 on larger screens; nothing is lost but decoration. */
-  .lock-icon {
-    display: none;
-  }
-
-  .site-nav ul {
-    gap: 1.15rem;
-    font-size: 0.8rem;
-  }
-
-  .site-nav .wrap {
-    padding-top: 0.75rem;
-    padding-bottom: 0.75rem;
-  }
-
-  h1 { font-size: 2.25rem; }
-  h2 { font-size: 1.6rem; }
-
-  .hero {
-    padding: 3.5rem 0;
-  }
-
-  .hero-compact {
-    padding: 2rem 0;
-  }
-
-  .section {
-    padding: 2.5rem 0;
-  }
-
-  .card {
-    padding: 1.5rem;
-  }
-
-  /* Side by side, these two wrap to two lines each and leave the radio
-     stranded beside a two-line label. */
-  .radio-row {
-    flex-direction: column;
-    gap: 0.75rem;
-  }
-
-  .nested-fields {
-    margin-left: 0.75rem;
-    padding-left: 0.85rem;
-  }
+@media (max-width: 640px) {
+  .site-nav { position: static; }
+  .site-nav ul { gap: 0.9rem; font-size: 0.72rem; }
+  .lock-icon { display: none; }
+  .event { grid-template-columns: 1fr; }
+  .event-left { text-align: center; border-right: none; border-bottom: 1px solid var(--hairline); padding: 0 0 0.9rem; }
+  .event-right { text-align: center; padding: 1rem 0 0; }
+  .event-btns { justify-content: center; }
+  .radio-row { flex-direction: column; gap: 0.75rem; }
+  .nested-fields { margin-left: 0.75rem; padding-left: 0.85rem; }
+  .hero-photo { background-attachment: scroll; min-height: 70vh; }
 }

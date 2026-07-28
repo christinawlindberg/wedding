@@ -5,3 +5,6 @@
 # repo is headed for a public GitHub Pages deploy. Import it directly into
 # your Google Sheet; see GuestList-example.csv for the format.
 GuestList-template.csv
+
+# Original full-res background photos (large; the web-sized hero lives in assets/images/)
+backgrounds.zip

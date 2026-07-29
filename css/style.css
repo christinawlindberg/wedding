@@ -120,10 +120,15 @@ p { margin: 0.9rem 0; }
 .home .date { opacity: 0.92; }
 .home .hr-mark { background: #fff; opacity: 0.8; }
 .home .section { padding-bottom: 4rem; }
+.home-couple { margin: 2.5rem auto 0; max-width: 340px; }
+.home-couple img {
+  display: block; width: 100%; border-radius: 12px;
+  box-shadow: 0 10px 34px rgba(0,0,0,0.4);
+}
 
 .hero-photo {
-  min-height: 82vh; display: flex; flex-direction: column;
-  align-items: center; justify-content: center; padding: 4rem 1.5rem;
+  min-height: 72vh; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; padding: 4rem 1.5rem 2.5rem;
 }
 
 /* ---------- callout ---------- */
@@ -259,6 +264,13 @@ input[type="password"], select, textarea {
 /* ---------- footer photo banner ---------- */
 .page-banner { width: 100%; height: clamp(150px, 24vh, 240px); background-size: cover; background-position: center; margin-top: 3rem; }
 .home .page-banner { margin-top: 0; }
+
+.page-quote {
+  margin: 3.5rem auto 0; max-width: 34rem; text-align: center;
+  font-style: italic; font-size: 1.2rem; color: var(--muted);
+  border: 0; padding: 0;
+}
+.page-quote cite { display: block; margin-top: 0.6rem; font-size: 0.9rem; font-style: normal; }
 
 /* ---------- footer ---------- */
 .site-footer { border-top: 1px solid var(--line); margin-top: 3rem; padding: 2.5rem 0 3.5rem; text-align: center; font-size: 0.82rem; color: var(--muted); }

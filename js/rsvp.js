@@ -112,7 +112,9 @@
         const dietaryField = fragment.querySelector(".member-dietary-field");
         const dietaryWrap = fragment.querySelector(".member-dietary-wrap");
         const dietaryLabel = fragment.querySelector(".member-dietary-label");
-        const lunchField = fragment.querySelector(".member-lunch-field");
+        const lunchRadios = fragment.querySelectorAll(".member-lunch-field");
+        const lunchLabel = fragment.querySelector(".member-lunch-label");
+        const lunchGroup = fragment.querySelector(".member-lunch-radios");
         const lunchWrap = fragment.querySelector(".member-lunch-wrap");
         const declineNoteField = fragment.querySelector(".member-decline-note-field");
         const declineNoteWrap = fragment.querySelector(".member-decline-note-wrap");
@@ -124,7 +126,7 @@
         nameField.name = `member${i}_name`;
         emailField.name = `member${i}_email`;
         dietaryField.name = `member${i}_dietary`;
-        lunchField.name = `member${i}_buffet`;
+        lunchRadios.forEach((r) => { r.name = `member${i}_buffet`; });
         declineNoteField.name = `member${i}_declineNote`;
 
         // Every label points at its own input. The visible text stays short
@@ -144,11 +146,8 @@
         declineNoteLabel.htmlFor = declineNoteField.id;
         declineNoteField.setAttribute("aria-label", `Leave a note — ${memberName}`);
 
-        lunchField.id = `member${i}-buffet`;
-        lunchField.setAttribute(
-          "aria-label",
-          `Interested in attending the Sunday Fish Buffet Lunch? — ${memberName}`
-        );
+        lunchLabel.id = `member${i}-lunch-label`;
+        lunchGroup.setAttribute("aria-labelledby", `member${i}-heading member${i}-lunch-label`);
 
         radios.forEach((r) => {
           r.name = `member${i}_attending`;
@@ -156,17 +155,20 @@
           r.addEventListener("change", () => {
             // Dietary/buffet questions only matter if this specific
             // person is attending; a decline note only makes sense if
-            // they're not.
+            // they're not. The buffet is a required yes/no once shown, so
+            // its required-ness tracks visibility (a hidden required field
+            // blocks submission with an un-positionable bubble).
             const attending = r.value === "Yes" && r.checked;
             const declining = r.value === "No" && r.checked;
             show(dietaryWrap, attending);
             show(lunchWrap, attending);
             show(declineNoteWrap, declining);
+            lunchRadios.forEach((lr) => { lr.required = attending; });
           });
         });
 
         membersContainer.appendChild(fragment);
-        blocks.push({ block, heading, nameField, emailField, dietaryField, dietaryWrap, lunchField, lunchWrap, declineNoteField, declineNoteWrap });
+        blocks.push({ block, heading, nameField, emailField, dietaryField, dietaryWrap, lunchRadios, lunchWrap, declineNoteField, declineNoteWrap });
       });
 
       return blocks;
@@ -180,7 +182,8 @@
     const plusOneDetails = document.getElementById("plusOneDetails");
     const plusOneNameInput = document.getElementById("plusOneName");
     const plusOneDietaryInput = document.getElementById("plusOneDietary");
-    const plusOneLunchCheckbox = document.getElementById("plusOneLunch");
+    const plusOneLunchRadios = rsvpForm.querySelectorAll('input[name="plusOneLunch"]');
+    const setPlusOneLunch = (val) => plusOneLunchRadios.forEach((r) => { r.checked = r.value === val; });
     const childrenField = document.getElementById("childrenField");
     const childrenInput = document.getElementById("children");
     const songRequestsInput = document.getElementById("songRequests");
@@ -199,7 +202,9 @@
     function refreshRequired() {
       const anyAttending = isAnyoneAttending();
       sharedEmail.required = anyAttending;
-      plusOneNameInput.required = anyAttending && !plusOneField.hidden && plusOneCheckbox.checked;
+      const plusOneShown = anyAttending && !plusOneField.hidden && plusOneCheckbox.checked;
+      plusOneNameInput.required = plusOneShown;
+      plusOneLunchRadios.forEach((r) => { r.required = plusOneShown; });
     }
 
     function isAnyoneAttending() {
@@ -248,16 +253,19 @@
             sharedEmail.value = member.existing.email;
           }
           m.dietaryField.value = member.existing.dietary || "";
-          m.lunchField.checked = member.existing.buffet === "Yes";
+          if (member.existing.buffet === "Yes" || member.existing.buffet === "No") {
+            const lr = m.block.querySelector(`.member-lunch-field[value="${member.existing.buffet}"]`);
+            if (lr) lr.checked = true;
+          }
           m.declineNoteField.value = member.existing.declineNote || "";
           if (member.existing.attending) {
-            const radio = m.block.querySelector(
-              member.existing.attending === "Yes" ? 'input[value="Yes"]' : 'input[value="No"]'
-            );
+            const attending = member.existing.attending === "Yes";
+            const radio = m.block.querySelector(`.member-attending-radio[value="${member.existing.attending}"]`);
             if (radio) radio.checked = true;
-            show(m.dietaryWrap, member.existing.attending === "Yes");
-            show(m.lunchWrap, member.existing.attending === "Yes");
+            show(m.dietaryWrap, attending);
+            show(m.lunchWrap, attending);
             show(m.declineNoteWrap, member.existing.attending === "No");
+            m.lunchRadios.forEach((lr) => { lr.required = attending; });
           }
         }
       });
@@ -272,7 +280,7 @@
       // inherit the first one's answers.
       plusOneNameInput.value = "";
       plusOneDietaryInput.value = "";
-      plusOneLunchCheckbox.checked = false;
+      setPlusOneLunch("");
       childrenInput.value = "";
       songRequestsInput.value = "";
       notesInput.value = "";
@@ -283,7 +291,7 @@
           plusOneCheckbox.checked = shared.plusOne === "Yes";
           plusOneNameInput.value = shared.plusOneName || "";
           plusOneDietaryInput.value = shared.plusOneDietary || "";
-          plusOneLunchCheckbox.checked = shared.plusOneLunch === "Yes";
+          setPlusOneLunch(shared.plusOneLunch === "No" ? "No" : shared.plusOneLunch === "Yes" ? "Yes" : "");
           show(plusOneDetails, plusOneCheckbox.checked);
         }
         if (match.childrenAllowed) {

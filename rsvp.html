@@ -134,7 +134,11 @@
               </div>
 
               <div class="field member-lunch-wrap" hidden>
-                <label class="choice-label"><input type="checkbox" class="member-lunch-field" value="Yes"> Interested in attending the Sunday Fish Buffet Lunch?</label>
+                <span class="field-label member-lunch-label">Interested in the Sunday Fish Buffet Lunch?</span>
+                <div class="radio-row member-lunch-radios" role="group">
+                  <label><input type="radio" class="member-lunch-field" value="Yes"> Yes</label>
+                  <label><input type="radio" class="member-lunch-field" value="No"> No</label>
+                </div>
                 <p class="field-hint">Sunday the 5th at 12pm at Snogeb&aelig;k R&oslash;geri — see the <a href="schedule.html" target="_blank" rel="noopener">schedule</a> for more (opens in a new tab so you don't lose your answers).</p>
               </div>
 
@@ -157,7 +161,13 @@
                   <label for="plusOneDietary">Plus-one's dietary restrictions / preferences</label>
                   <input type="text" id="plusOneDietary" name="plusOneDietary" placeholder="e.g. nut allergy, gluten-free, vegan">
                 </div>
-                <label class="choice-label"><input type="checkbox" id="plusOneLunch" name="plusOneLunch" value="Yes"> Plus-one interested in attending the Sunday Fish Buffet Lunch?</label>
+                <div class="field">
+                  <span class="field-label">Plus-one interested in the Sunday Fish Buffet Lunch?</span>
+                  <div class="radio-row" role="group" aria-label="Plus-one interested in the Sunday Fish Buffet Lunch">
+                    <label><input type="radio" name="plusOneLunch" value="Yes"> Yes</label>
+                    <label><input type="radio" name="plusOneLunch" value="No"> No</label>
+                  </div>
+                </div>
               </div>
             </div>
 

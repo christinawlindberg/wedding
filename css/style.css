@@ -90,6 +90,10 @@ a { color: var(--accent); text-underline-offset: 2px; }
 h1 { font-weight: 600; line-height: 1.06; font-size: clamp(2.2rem, 5.5vw, 3rem); margin: 0 0 0.4rem; letter-spacing: 0.01em; }
 h2 { font-weight: 600; font-size: clamp(1.5rem, 3.4vw, 1.9rem); line-height: 1.15; margin: 2.6rem 0 0.2rem; }
 h3 { font-weight: 600; font-size: 1.25rem; margin: 1.6rem 0 0.3rem; }
+.cat-head {
+  font-size: clamp(2rem, 5vw, 2.5rem); margin: 3rem 0 1.1rem;
+  padding-bottom: 0.4rem; border-bottom: 2px solid var(--accent);
+}
 h1, h2, h3 { text-wrap: balance; }
 .sub { font-style: italic; color: var(--muted); font-size: 1.05rem; margin: 0.1rem 0 0; }
 p { margin: 0.9rem 0; }
@@ -119,16 +123,16 @@ p { margin: 0.9rem 0; }
 .home h1, .home .date, .home .lede { color: #fff; }
 .home .date { opacity: 0.92; }
 .home .hr-mark { background: #fff; opacity: 0.8; }
-.home .section { padding-bottom: 4rem; }
-.home-couple { margin: 2.5rem auto 0; max-width: 340px; }
+.home .section { padding-top: 0; padding-bottom: 4rem; }
+.home .lede { margin-top: 0; }
+.home-couple { margin: 2.5rem auto; max-width: 340px; }
 .home-couple img {
   display: block; width: 100%; border-radius: 12px;
   box-shadow: 0 10px 34px rgba(0,0,0,0.4);
 }
 
 .hero-photo {
-  min-height: 72vh; display: flex; flex-direction: column;
-  align-items: center; justify-content: center; padding: 4rem 1.5rem 2.5rem;
+  text-align: center; padding: 4.5rem 1.5rem 0;
 }
 
 /* ---------- callout ---------- */
@@ -294,7 +298,7 @@ textarea:focus-visible, select:focus-visible {
   .radio-row { flex-direction: column; gap: 0.75rem; }
   .nested-fields { margin-left: 0.75rem; padding-left: 0.85rem; }
   .home { background-attachment: scroll; }
-  .hero-photo { min-height: 70vh; }
+  .hero-photo { padding-top: 3.5rem; }
   .gallery, .figure-pair { grid-template-columns: 1fr; }
   .gallery img { height: 220px; }
 }

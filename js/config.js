@@ -5,10 +5,10 @@
 // plain password here). Use admin/generate-hash.html to create a new hash
 // when you change the password, then paste it below.
 //
-// Current password: "tbd" — placeholder until you decide on the real one.
-// CHANGE THIS before sending invitations (use admin/generate-hash.html).
+// Current password: "oliver2027". Change it here (via admin/generate-hash.html)
+// if you ever need to, and remember to tell guests in the invitation.
 const SITE_CONFIG = {
-  PASSWORD_HASH: "41ae616098dc844be79a547862902f30e586a2600f33556900af1918a09c58cf",
+  PASSWORD_HASH: "1cc582a661f1a296213617f0d61371486a3b751f417c25696b255deecc44835e",
 
   RSVP_ENDPOINT: "https://script.google.com/macros/s/AKfycbxThrMslP0nKUznid1lN4zrCDv_SuoAHb-X30i8ktl1gVqI1CKv2y_yPy6IhaHuJVXFsA/exec",
 

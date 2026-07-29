@@ -107,20 +107,24 @@ p { margin: 0.9rem 0; }
 .hero .date { font-size: 1.25rem; color: var(--muted); margin-top: 0.9rem; }
 .hr-mark { width: 3.2rem; height: 2px; background: var(--accent); border: 0; margin: 1.5rem auto; opacity: 0.7; }
 
-/* Photo hero: the image is pinned so the names — and the story below —
-   scroll up over a stationary photo. iOS Safari ignores fixed attachment
-   and simply scrolls the photo, which is a fine fallback. */
-.hero-photo {
-  min-height: 82vh; display: flex; flex-direction: column;
-  align-items: center; justify-content: center; padding: 4rem 1.5rem;
-  background-image: linear-gradient(rgba(0,0,0,0.04), rgba(0,0,0,0.04)), url("../assets/images/home-hero.jpg");
+/* Home: the photo is pinned to the viewport so the names AND the story
+   scroll up over a stationary image, all in white. iOS Safari ignores
+   fixed attachment and simply scrolls the photo, which is a fine fallback. */
+.home {
+  background-image: linear-gradient(to bottom, rgba(0,0,0,0.04), rgba(0,0,0,0.18)), url("../assets/images/home-hero.jpg");
   background-size: cover; background-position: center center; background-attachment: fixed;
   color: #fff;
 }
-.hero-photo .kicker { color: #fff; opacity: 0.95; }
-.hero-photo h1 { color: #fff; }
-.hero-photo .date { color: #fff; opacity: 0.92; }
-.hero-photo .hr-mark { background: #fff; opacity: 0.8; }
+.home .kicker { color: #fff; opacity: 0.95; }
+.home h1, .home .date, .home .lede { color: #fff; }
+.home .date { opacity: 0.92; }
+.home .hr-mark { background: #fff; opacity: 0.8; }
+.home .section { padding-bottom: 4rem; }
+
+.hero-photo {
+  min-height: 82vh; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; padding: 4rem 1.5rem;
+}
 
 /* ---------- callout ---------- */
 .callout {
@@ -240,6 +244,22 @@ input[type="password"], select, textarea {
 .summary-list li { padding: 0.6rem 0; border-bottom: 1px solid var(--hairline); }
 .summary-list .summary-nested { padding-left: 1.5rem; font-size: 0.9rem; color: var(--muted); border-bottom: none; padding-top: 0; }
 
+/* ---------- figures & galleries ---------- */
+.figure { margin: 1.6rem 0; }
+.figure img { width: 100%; height: auto; border-radius: 8px; display: block; }
+.figure figcaption { font-size: 0.85rem; color: var(--muted); margin-top: 0.5rem; }
+.figure-narrow { max-width: 34rem; margin-left: auto; margin-right: auto; }
+.figure-pair { display: grid; gap: 0.8rem; grid-template-columns: 1fr 1fr; }
+.figure-pair img { border-radius: 8px; height: 100%; object-fit: cover; }
+.gallery { display: grid; gap: 0.8rem; grid-template-columns: 1fr 1fr; margin: 1.4rem 0; }
+.gallery figure { margin: 0; }
+.gallery img { width: 100%; height: 240px; object-fit: cover; border-radius: 8px; display: block; }
+.gallery figcaption { font-size: 0.8rem; color: var(--muted); margin-top: 0.4rem; }
+
+/* ---------- footer photo banner ---------- */
+.page-banner { width: 100%; height: clamp(150px, 24vh, 240px); background-size: cover; background-position: center; margin-top: 3rem; }
+.home .page-banner { margin-top: 0; }
+
 /* ---------- footer ---------- */
 .site-footer { border-top: 1px solid var(--line); margin-top: 3rem; padding: 2.5rem 0 3.5rem; text-align: center; font-size: 0.82rem; color: var(--muted); }
 .not-a-link { color: inherit; text-decoration: none; }
@@ -261,5 +281,8 @@ textarea:focus-visible, select:focus-visible {
   .event-btns { justify-content: center; }
   .radio-row { flex-direction: column; gap: 0.75rem; }
   .nested-fields { margin-left: 0.75rem; padding-left: 0.85rem; }
-  .hero-photo { background-attachment: scroll; min-height: 70vh; }
+  .home { background-attachment: scroll; }
+  .hero-photo { min-height: 70vh; }
+  .gallery, .figure-pair { grid-template-columns: 1fr; }
+  .gallery img { height: 220px; }
 }

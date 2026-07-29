@@ -25,5 +25,5 @@ const SITE_CONFIG = {
   // Shown on the RSVP page ("Please respond by …"). The date that's
   // actually *enforced* is RSVP_DEADLINE in Code.gs — set both, and keep
   // them in agreement.
-  RSVP_DEADLINE_TEXT: "[RSVP Deadline]",
+  RSVP_DEADLINE_TEXT: "February 4, 2027",
 };

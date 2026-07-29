@@ -46,7 +46,7 @@ const SHARED_TOKEN = "XkOmJY8lN8TLXSswhpfgKVlI";
 // still open — submissions are refused from the following midnight). Leave
 // "" to accept responses indefinitely. Keep this in sync with
 // RSVP_DEADLINE_TEXT in js/config.js, which is what guests actually see.
-const RSVP_DEADLINE = "";
+const RSVP_DEADLINE = "2027-02-04";
 
 // Emails each party a copy of what they submitted. Fill in the three
 // constants below before turning this on — they appear in the email.

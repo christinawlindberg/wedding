@@ -18,10 +18,10 @@ window.I18N_DA = {
   // ---- nav (shared across every page) ----
   "nav.home": "Hjem",
   "nav.schedule": "Program",
-  "nav.about": "Om os",
+  "nav.about": "Info",
   "nav.travel": "Rejse",
   "nav.explore": "Oplev",
-  "nav.rsvp": "Svar",
+  "nav.rsvp": "RSVP",
 
   // ---- home ----
   "home.kicker": "Brylluppet mellem",

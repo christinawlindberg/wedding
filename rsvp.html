@@ -15,27 +15,28 @@
 <nav class="site-nav">
   <div class="wrap">
     <a class="brand" href="index.html">John &amp; Christina</a>
+    <button type="button" class="lang-toggle" data-lang-toggle aria-label="Skift til dansk">Dansk</button>
     <ul>
-      <li><a href="index.html">Home</a></li>
-      <li><a href="schedule.html">Schedule</a></li>
-      <li><a href="about.html">About</a></li>
-      <li><a href="travel.html">Travel</a></li>
-      <li><a href="explore.html">Explore</a></li>
-      <li><a href="rsvp.html" aria-current="page">RSVP <span class="lock-icon" aria-hidden="true">🔒</span></a></li>
+      <li><a href="index.html"><span data-i18n="nav.home">Home</span></a></li>
+      <li><a href="schedule.html"><span data-i18n="nav.schedule">Schedule</span></a></li>
+      <li><a href="about.html"><span data-i18n="nav.about">About</span></a></li>
+      <li><a href="travel.html"><span data-i18n="nav.travel">Travel</span></a></li>
+      <li><a href="explore.html"><span data-i18n="nav.explore">Explore</span></a></li>
+      <li><a href="rsvp.html" aria-current="page"><span data-i18n="nav.rsvp">RSVP</span> <span class="lock-icon" aria-hidden="true">🔒</span></a></li>
     </ul>
   </div>
 </nav>
 
 <div id="gate" class="gate">
   <div class="gate-box">
-    <h2>This page is password protected</h2>
-    <p class="muted">Enter the password from your invitation email.</p>
+    <h2 data-i18n="rsvp.gate.h">This page is password protected</h2>
+    <p class="muted" data-i18n="rsvp.gate.p">Enter the password from your invitation email.</p>
     <form id="gate-form">
       <div class="field">
-        <label for="gate-password">Password</label>
+        <label for="gate-password" data-i18n="rsvp.gate.label">Password</label>
         <input type="password" id="gate-password" name="password" autocomplete="current-password" autofocus required>
       </div>
-      <button type="submit" class="btn">Unlock</button>
+      <button type="submit" class="btn" data-i18n="rsvp.gate.btn">Unlock</button>
       <p id="gate-error" class="form-status error" role="status"></p>
     </form>
   </div>
@@ -44,7 +45,7 @@
 <main data-protected-content>
   <header class="hero hero-compact">
     <div class="wrap">
-      <div class="eyebrow">Please Respond By <span data-rsvp-deadline>[RSVP Deadline]</span></div>
+      <div class="eyebrow"><span data-i18n="rsvp.respondby">Please Respond By</span> <span data-rsvp-deadline>[RSVP Deadline]</span></div>
       <h1>RSVP</h1>
     </div>
   </header>
@@ -56,16 +57,13 @@
         <!-- Step 1: find the guest's invitation -->
         <div id="lookup-step">
           <p class="muted">
-            Enter your name as it appears on your invitation to get started.
-            If your plans change later, come back and look yourself up again
-            to edit your response.
-          </p>
+<span data-i18n="rsvp.lookup.p">Enter your name as it appears on your invitation to get started. If your plans change later, come back and look yourself up again to edit your response.</span></p>
           <form id="lookup-form">
             <div class="field">
-              <label for="lookupName">Full Name</label>
+              <label for="lookupName" data-i18n="rsvp.lookup.label">Full Name</label>
               <input type="text" id="lookupName" name="lookupName" autocomplete="name" required>
             </div>
-            <button type="submit" class="btn">Find My Invitation</button>
+            <button type="submit" class="btn" data-i18n="rsvp.lookup.btn">Find My Invitation</button>
             <p id="lookup-status" class="form-status" role="status"></p>
           </form>
         </div>
@@ -75,11 +73,9 @@
              which one they are before the form unlocks. -->
         <div id="disambiguation-step" hidden>
           <p class="muted">
-            More than one person on the guest list has that name. Which one
-            are you?
-          </p>
+<span data-i18n="rsvp.disamb.p">More than one person on the guest list has that name. Which one are you?</span></p>
           <div id="disambiguation-options"></div>
-          <p><button type="button" class="link-button" data-start-over>← That's not me, start over</button></p>
+          <p><button type="button" class="link-button" data-start-over data-i18n="rsvp.disamb.startover">← That's not me, start over</button></p>
         </div>
 
         <!-- Step 2: the actual RSVP, shown once matched. Guests who share an
@@ -90,9 +86,9 @@
              one email per party is duplicated onto every member's row when
              submitted (see js/rsvp.js). -->
         <form id="rsvp-form" hidden>
-          <p class="muted">You're on the list, <span id="party-names"></span>!</p>
+          <p class="muted"><span data-i18n="rsvp.onlist">You're on the list,</span> <span id="party-names"></span>!</p>
           <p class="muted small">
-            Not you? <button type="button" class="link-button" data-start-over>Look up a different name</button>
+            <span data-i18n="rsvp.notyou">Not you?</span> <button type="button" class="link-button" data-start-over data-i18n="rsvp.lookupdiff">Look up a different name</button>
           </p>
 
           <input type="hidden" id="partyId" name="partyId">
@@ -109,9 +105,9 @@
                collected if at least one member of the party is accepting —
                see refreshSharedVisibility in js/rsvp.js. -->
           <div id="sharedEmailField" class="field" hidden>
-            <label for="sharedEmail">Email</label>
+            <label for="sharedEmail" data-i18n="rsvp.email.label">Email</label>
             <input type="email" id="sharedEmail" autocomplete="email">
-            <p class="field-hint">We'll send a copy of your answers here to confirm, or if you ever need to update your RSVP status.</p>
+            <p class="field-hint" data-i18n="rsvp.email.hint">We'll send a copy of your answers here to confirm, or if you ever need to update your RSVP status.</p>
           </div>
 
           <template id="member-template">
@@ -121,73 +117,73 @@
               <input type="hidden" class="member-email-field">
 
               <div class="field">
-                <span class="field-label member-attending-label">Will you be attending?</span>
+                <span class="field-label member-attending-label" data-i18n="rsvp.m.attending">Will you be attending?</span>
                 <div class="radio-row" role="group">
-                  <label><input type="radio" class="member-attending-radio" value="Yes"> Joyfully accept</label>
-                  <label><input type="radio" class="member-attending-radio" value="No"> Regretfully decline</label>
+                  <label><input type="radio" class="member-attending-radio" value="Yes"> <span data-i18n="rsvp.m.accept">Joyfully accept</span></label>
+                  <label><input type="radio" class="member-attending-radio" value="No"> <span data-i18n="rsvp.m.decline">Regretfully decline</span></label>
                 </div>
               </div>
 
               <div class="field member-dietary-wrap" hidden>
-                <label class="member-dietary-label">Dietary Restrictions / Preferences</label>
-                <input type="text" class="member-dietary-field" placeholder="e.g. nut allergy, gluten-free, vegan">
+                <label class="member-dietary-label" data-i18n="rsvp.m.dietary">Dietary Restrictions / Preferences</label>
+                <input type="text" class="member-dietary-field" placeholder="e.g. nut allergy, gluten-free, vegan" data-i18n-ph="rsvp.diet.ph">
               </div>
 
               <div class="field member-lunch-wrap" hidden>
-                <span class="field-label member-lunch-label">Interested in the Sunday Fish Buffet Lunch?</span>
+                <span class="field-label member-lunch-label" data-i18n="rsvp.m.lunch">Interested in the Sunday Fish Buffet Lunch?</span>
                 <div class="radio-row member-lunch-radios" role="group">
-                  <label><input type="radio" class="member-lunch-field" value="Yes"> Yes</label>
-                  <label><input type="radio" class="member-lunch-field" value="No"> No</label>
+                  <label><input type="radio" class="member-lunch-field" value="Yes"> <span data-i18n="rsvp.yes">Yes</span></label>
+                  <label><input type="radio" class="member-lunch-field" value="No"> <span data-i18n="rsvp.no">No</span></label>
                 </div>
-                <p class="field-hint">Sunday the 5th at 12pm at Snogeb&aelig;k R&oslash;geri — see the <a href="schedule.html" target="_blank" rel="noopener">schedule</a> for more (opens in a new tab so you don't lose your answers).</p>
+                <p class="field-hint" data-i18n="rsvp.m.lunch.hint">Sunday the 5th at 12pm at Snogeb&aelig;k R&oslash;geri — see the <a href="schedule.html" target="_blank" rel="noopener">schedule</a> for more (opens in a new tab so you don't lose your answers).</p>
               </div>
 
               <div class="field member-decline-note-wrap" hidden>
-                <label class="member-decline-note-label">Leave a note?</label>
-                <textarea class="member-decline-note-field" rows="2" placeholder="Optional — we'll miss you!"></textarea>
+                <label class="member-decline-note-label" data-i18n="rsvp.m.note">Leave a note?</label>
+                <textarea class="member-decline-note-field" rows="2" placeholder="Optional — we'll miss you!" data-i18n-ph="rsvp.m.note.ph"></textarea>
               </div>
             </div>
           </template>
 
           <div id="attending-details" hidden>
             <div id="plusOneField" class="field" hidden>
-              <label class="choice-label"><input type="checkbox" id="plusOne" name="plusOne" value="Yes"> Bringing a plus-one</label>
+              <label class="choice-label"><input type="checkbox" id="plusOne" name="plusOne" value="Yes"> <span data-i18n="rsvp.plusone">Bringing a plus-one</span></label>
               <div id="plusOneDetails" class="nested-fields" hidden>
                 <div class="field">
-                  <label for="plusOneName">Plus-one's name</label>
+                  <label for="plusOneName" data-i18n="rsvp.po.name">Plus-one's name</label>
                   <input type="text" id="plusOneName" name="plusOneName">
                 </div>
                 <div class="field">
-                  <label for="plusOneDietary">Plus-one's dietary restrictions / preferences</label>
-                  <input type="text" id="plusOneDietary" name="plusOneDietary" placeholder="e.g. nut allergy, gluten-free, vegan">
+                  <label for="plusOneDietary" data-i18n="rsvp.po.diet">Plus-one's dietary restrictions / preferences</label>
+                  <input type="text" id="plusOneDietary" name="plusOneDietary" placeholder="e.g. nut allergy, gluten-free, vegan" data-i18n-ph="rsvp.diet.ph">
                 </div>
                 <div class="field">
-                  <span class="field-label">Plus-one interested in the Sunday Fish Buffet Lunch?</span>
-                  <div class="radio-row" role="group" aria-label="Plus-one interested in the Sunday Fish Buffet Lunch">
-                    <label><input type="radio" name="plusOneLunch" value="Yes"> Yes</label>
-                    <label><input type="radio" name="plusOneLunch" value="No"> No</label>
+                  <span class="field-label" data-i18n="rsvp.po.lunch">Plus-one interested in the Sunday Fish Buffet Lunch?</span>
+                  <div class="radio-row" role="group" aria-label="Plus-one interested in the Sunday Fish Buffet Lunch" data-i18n-al="rsvp.po.lunch.al">
+                    <label><input type="radio" name="plusOneLunch" value="Yes"> <span data-i18n="rsvp.yes">Yes</span></label>
+                    <label><input type="radio" name="plusOneLunch" value="No"> <span data-i18n="rsvp.no">No</span></label>
                   </div>
                 </div>
               </div>
             </div>
 
             <div id="childrenField" class="field" hidden>
-              <label for="children">Children Attending</label>
-              <input type="text" id="children" name="children" placeholder="e.g. names and ages, or leave blank if none">
+              <label for="children" data-i18n="rsvp.children">Children Attending</label>
+              <input type="text" id="children" name="children" placeholder="e.g. names and ages, or leave blank if none" data-i18n-ph="rsvp.children.ph">
             </div>
 
             <div class="field">
-              <label for="songRequests">Song Requests</label>
-              <textarea id="songRequests" name="songRequests" rows="2" placeholder="1-2 songs that will get you on the dance floor"></textarea>
+              <label for="songRequests" data-i18n="rsvp.songs">Song Requests</label>
+              <textarea id="songRequests" name="songRequests" rows="2" placeholder="1-2 songs that will get you on the dance floor" data-i18n-ph="rsvp.songs.ph"></textarea>
             </div>
 
             <div class="field">
-              <label for="notes">Anything Else?</label>
+              <label for="notes" data-i18n="rsvp.anything">Anything Else?</label>
               <textarea id="notes" name="notes" rows="2"></textarea>
             </div>
           </div>
 
-          <button type="submit" class="btn">Submit RSVP</button>
+          <button type="submit" class="btn" data-i18n="rsvp.submit">Submit RSVP</button>
           <p id="rsvp-status" class="form-status" role="status"></p>
         </form>
 
@@ -195,11 +191,11 @@
              (see verifySubmission in js/rsvp.js) so guests get a receipt
              rather than a filled-in form and a green line of text. -->
         <div id="rsvp-summary" hidden>
-          <h2 class="summary-heading">Thank you!</h2>
-          <p class="muted">Here's what we've got — a copy is on its way to <span id="summary-email"></span>.</p>
+          <h2 class="summary-heading" data-i18n="rsvp.summary.h">Thank you!</h2>
+          <p class="muted"><span data-i18n="rsvp.summary.p1">Here's what we've got — a copy is on its way to</span> <span id="summary-email"></span>.</p>
           <ul id="summary-list" class="summary-list"></ul>
-          <p class="muted small">Plans change — you can come back and edit this any time before the deadline.</p>
-          <button type="button" class="btn" id="edit-response">Edit my response</button>
+          <p class="muted small" data-i18n="rsvp.summary.p2">Plans change — you can come back and edit this any time before the deadline.</p>
+          <button type="button" class="btn" id="edit-response" data-i18n="rsvp.summary.edit">Edit my response</button>
         </div>
       </div>
     </div>
@@ -209,6 +205,7 @@
 <div class="page-banner" style="background-image: url(assets/images/banner-rsvp.jpg); background-position: center 62%" role="presentation"></div>
 
 <script src="js/config.js"></script>
+<script src="js/i18n.js"></script>
 <script src="js/site.js"></script>
 <script src="js/gate.js"></script>
 <script src="js/rsvp.js"></script>

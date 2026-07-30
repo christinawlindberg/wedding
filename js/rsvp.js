@@ -74,6 +74,16 @@
     return "s" + Date.now() + "-" + Math.random().toString(36).slice(2, 10);
   }
 
+  // Our i18n strings use HTML entities (&mdash;, &oslash;, …). The summary
+  // list mixes trusted labels with untrusted guest input, so it's built with
+  // textContent — decode() turns a trusted label's entities into real
+  // characters first, so they render instead of showing raw "&oslash;".
+  function decode(s) {
+    var d = document.createElement("textarea");
+    d.innerHTML = s;
+    return d.value;
+  }
+
   document.addEventListener("DOMContentLoaded", () => {
     const lookupForm = document.getElementById("lookup-form");
     const lookupStep = document.getElementById("lookup-step");
@@ -140,11 +150,11 @@
 
         dietaryField.id = `member${i}-dietary`;
         dietaryLabel.htmlFor = dietaryField.id;
-        dietaryField.setAttribute("aria-label", `Dietary restrictions / preferences — ${memberName}`);
+        dietaryField.setAttribute("aria-label", `${decode(T("rsvp.js.aria.dietary"))} — ${memberName}`);
 
         declineNoteField.id = `member${i}-decline-note`;
         declineNoteLabel.htmlFor = declineNoteField.id;
-        declineNoteField.setAttribute("aria-label", `Leave a note — ${memberName}`);
+        declineNoteField.setAttribute("aria-label", `${decode(T("rsvp.js.aria.note"))} — ${memberName}`);
 
         lunchLabel.id = `member${i}-lunch-label`;
         lunchGroup.setAttribute("aria-labelledby", `member${i}-heading member${i}-lunch-label`);
@@ -168,6 +178,10 @@
         });
 
         membersContainer.appendChild(fragment);
+        // The cloned template carries data-i18n labels; translate the block
+        // now so it matches the current language (it's also re-translated on
+        // toggle, since it's now part of the document).
+        if (window.i18n) window.i18n.translate(block);
         blocks.push({ block, heading, nameField, emailField, dietaryField, dietaryWrap, lunchRadios, lunchWrap, declineNoteField, declineNoteWrap });
       });
 
@@ -325,10 +339,7 @@
       if (new Set(labels).size < labels.length) {
         show(disambiguationStep, false);
         show(lookupStep, true);
-        showLookupError(
-          "More than one guest on our list has that name, and we can't tell from here which one is you — please " +
-          contactSentence() + " and we'll get you sorted."
-        );
+        showLookupError(M("rsvp.js.dupname"));
         return;
       }
 
@@ -369,8 +380,10 @@
       el.addEventListener("click", startOver);
     });
 
+    // Messages come from our own i18n dictionary (which uses HTML entities
+    // like &mdash;), so they're set as innerHTML rather than textContent.
     function showLookupError(message) {
-      lookupStatus.textContent = message;
+      lookupStatus.innerHTML = message;
       lookupStatus.className = "form-status error";
     }
 
@@ -380,7 +393,7 @@
     // to guess how much of it — middle names included — we're expecting).
     async function performLookup(typedName) {
       if (!SITE_CONFIG.RSVP_ENDPOINT || SITE_CONFIG.RSVP_ENDPOINT.startsWith("PASTE_")) {
-        showLookupError("RSVP isn't connected yet — see README for setup steps.");
+        showLookupError(T("rsvp.js.notconnected"));
         return;
       }
 
@@ -388,24 +401,24 @@
 
       const submitBtn = lookupForm.querySelector('button[type="submit"]');
       submitBtn.disabled = true;
-      lookupStatus.textContent = "Looking you up…";
+      lookupStatus.innerHTML = T("rsvp.js.looking");
       lookupStatus.className = "form-status";
 
       try {
         const result = await jsonp(SITE_CONFIG.RSVP_ENDPOINT, { name: typedName });
 
         if (result.error) {
-          showLookupError("Something went wrong looking up your invitation. Please try again, or " + contactSentence());
+          showLookupError(M("rsvp.js.err.lookup"));
           return;
         }
 
         if (!result.found) {
-          showLookupError("We couldn't find that name on the guest list. Please check the spelling, or " + contactSentence() + " if you think this is a mistake.");
+          showLookupError(M("rsvp.js.err.notfound"));
           return;
         }
 
         if (result.pastDeadline) {
-          showLookupError("The RSVP deadline has passed, so responses are closed here — please " + contactSentence() + " and we'll sort it out.");
+          showLookupError(M("rsvp.js.err.deadline"));
           return;
         }
 
@@ -415,7 +428,7 @@
           applyMatch(result);
         }
       } catch (err) {
-        showLookupError("We couldn't reach the guest list just now. Please check your connection and try again, or " + contactSentence() + ".");
+        showLookupError(M("rsvp.js.err.unreachable"));
       } finally {
         submitBtn.disabled = false;
       }
@@ -424,9 +437,13 @@
     // Guests all have our contact details from the invitation, so the site
     // deliberately carries no email address — error messages just point back
     // to us directly.
-    function contactSentence() {
-      return "reach out to us";
-    }
+    //
+    // T() looks up a JS-only string in the current language; M() also splices
+    // the contact phrase into the "{c}" placeholder. Both fall back to the
+    // key/English if i18n somehow isn't loaded.
+    function T(key) { return window.i18n ? window.i18n.t(key) : key; }
+    function M(key) { return T(key).replace("{c}", T("rsvp.js.contact")); }
+    function contactSentence() { return T("rsvp.js.contact"); }
 
     lookupForm.addEventListener("submit", (e) => {
       e.preventDefault();
@@ -473,8 +490,14 @@
       return party.members.every((m) => m.existing && m.existing.submissionId === submissionId);
     }
 
-    function renderSummary(data) {
+    // Remembered so the summary can be re-rendered in the other language if
+    // the guest toggles it while looking at their receipt.
+    let lastSummaryData = null;
+
+    function renderSummary(data, keepView) {
+      lastSummaryData = data;
       summaryList.innerHTML = "";
+      const D = (key) => decode(T(key));
       const add = (text, nested) => {
         const li = document.createElement("li");
         li.textContent = text;
@@ -486,30 +509,36 @@
       while (data.get(`member${i}_name`)) {
         const name = data.get(`member${i}_name`);
         const attending = data.get(`member${i}_attending`) === "Yes";
-        add(`${name} — ${attending ? "attending" : "not attending"}`);
+        add(`${name} — ${attending ? D("rsvp.js.attending") : D("rsvp.js.notattending")}`);
         if (attending) {
           const dietary = data.get(`member${i}_dietary`);
-          if (dietary) add(`Dietary: ${dietary}`, true);
-          if (data.get(`member${i}_buffet`) === "Yes") add("Coming to the Sunday lunch", true);
+          if (dietary) add(`${D("rsvp.js.sum.dietary")} ${dietary}`, true);
+          if (data.get(`member${i}_buffet`) === "Yes") add(D("rsvp.js.sum.lunch"), true);
         }
         i++;
       }
 
       if (data.get("plusOne") === "Yes") {
-        add(`Plus-one: ${data.get("plusOneName") || "(name to come)"}`);
+        add(`${D("rsvp.js.sum.plusone")} ${data.get("plusOneName") || D("rsvp.js.sum.nametocome")}`);
         const dietary = data.get("plusOneDietary");
-        if (dietary) add(`Dietary: ${dietary}`, true);
-        if (data.get("plusOneLunch") === "Yes") add("Coming to the Sunday lunch", true);
+        if (dietary) add(`${D("rsvp.js.sum.dietary")} ${dietary}`, true);
+        if (data.get("plusOneLunch") === "Yes") add(D("rsvp.js.sum.lunch"), true);
       }
-      if (data.get("children")) add(`Children: ${data.get("children")}`);
-      if (data.get("songRequests")) add(`Song requests: ${data.get("songRequests")}`);
-      if (data.get("notes")) add(`Notes: ${data.get("notes")}`);
+      if (data.get("children")) add(`${D("rsvp.js.sum.children")} ${data.get("children")}`);
+      if (data.get("songRequests")) add(`${D("rsvp.js.sum.songs")} ${data.get("songRequests")}`);
+      if (data.get("notes")) add(`${D("rsvp.js.sum.notes")} ${data.get("notes")}`);
 
-      summaryEmail.textContent = sharedEmail.value || "you";
+      summaryEmail.textContent = sharedEmail.value || D("rsvp.js.sum.you");
       show(rsvpForm, false);
       show(summary, true);
-      summary.scrollIntoView({ behavior: "smooth", block: "start" });
+      if (!keepView) summary.scrollIntoView({ behavior: "smooth", block: "start" });
     }
+
+    // Keep the summary list in sync when the language is toggled while it's
+    // on screen. (The static form chrome re-translates itself via data-i18n.)
+    document.addEventListener("langchange", () => {
+      if (summary && !summary.hidden && lastSummaryData) renderSummary(lastSummaryData, true);
+    });
 
     document.getElementById("edit-response").addEventListener("click", () => {
       show(summary, false);
@@ -524,7 +553,7 @@
 
       const submitBtn = rsvpForm.querySelector('button[type="submit"]');
       submitBtn.disabled = true;
-      status.textContent = "Submitting…";
+      status.innerHTML = T("rsvp.js.submitting");
       status.className = "form-status";
 
       // One email per party — duplicate it onto every member's hidden
@@ -555,10 +584,10 @@
           return;
         }
 
-        status.textContent = "We sent your RSVP but couldn't confirm it saved. Please try submitting once more — if it still doesn't stick, " + contactSentence() + " and we'll add you by hand.";
+        status.innerHTML = M("rsvp.js.err.unconfirmed");
         status.className = "form-status error";
       } catch (err) {
-        status.textContent = "Something went wrong submitting your RSVP. Please try again, or " + contactSentence() + " and we'll add you by hand.";
+        status.innerHTML = M("rsvp.js.err.submit");
         status.className = "form-status error";
       } finally {
         submitBtn.disabled = false;

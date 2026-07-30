@@ -19,22 +19,23 @@
 <nav class="site-nav">
   <div class="wrap">
     <a class="brand" href="index.html">John &amp; Christina</a>
+    <button type="button" class="lang-toggle" data-lang-toggle aria-label="Skift til dansk">Dansk</button>
     <ul>
-      <li><a href="index.html" aria-current="page">Home</a></li>
-      <li><a href="schedule.html">Schedule</a></li>
-      <li><a href="about.html">About</a></li>
-      <li><a href="travel.html">Travel</a></li>
-      <li><a href="explore.html">Explore</a></li>
-      <li><a href="rsvp.html">RSVP <span class="lock-icon" aria-hidden="true">🔒</span></a></li>
+      <li><a href="index.html" aria-current="page"><span data-i18n="nav.home">Home</span></a></li>
+      <li><a href="schedule.html"><span data-i18n="nav.schedule">Schedule</span></a></li>
+      <li><a href="about.html"><span data-i18n="nav.about">About</span></a></li>
+      <li><a href="travel.html"><span data-i18n="nav.travel">Travel</span></a></li>
+      <li><a href="explore.html"><span data-i18n="nav.explore">Explore</span></a></li>
+      <li><a href="rsvp.html"><span data-i18n="nav.rsvp">RSVP</span> <span class="lock-icon" aria-hidden="true">🔒</span></a></li>
     </ul>
   </div>
 </nav>
 
 <main class="home">
   <header class="hero hero-photo">
-    <p class="kicker">The wedding of</p>
+    <p class="kicker" data-i18n="home.kicker">The wedding of</p>
     <h1>John &amp; Christina</h1>
-    <p class="date">September 4, 2027 &middot; Snogeb&aelig;k, Bornholm</p>
+    <p class="date" data-i18n="home.date">September 4, 2027 &middot; Snogeb&aelig;k, Bornholm</p>
     <hr class="hr-mark">
   </header>
   <section class="section">
@@ -42,7 +43,7 @@
       <figure class="home-couple">
         <img src="assets/images/couple.jpg" alt="Christina and John">
       </figure>
-      <p class="lede">John and Christina met in 2019 at Johns Hopkins in Baltimore. Both were
+      <p class="lede" data-i18n="home.story">John and Christina met in 2019 at Johns Hopkins in Baltimore. Both were
       enrolled in Johns Hopkins&rsquo; Astronomy and Astrophysics PhD program. Through classes,
       homework study sessions, and weekly happy hours, they became friends and then quickly fell
       in love. Despite a pandemic, internships, travel, and the infamous academic two-body
@@ -54,6 +55,7 @@
 </main>
 
 <script src="js/config.js"></script>
+<script src="js/i18n.js"></script>
 <script src="js/site.js"></script>
 </body>
 </html>

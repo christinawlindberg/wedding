@@ -18,6 +18,7 @@ css/style.css      All styling — edit the variables at the top (accent, etc.)
 js/config.js       Password hash, RSVP endpoint, contact email, deadline —
                    the values you must set before launch
 js/site.js         Fills the contact address + RSVP deadline from config.js
+js/i18n.js         English/Danish translations + the language toggle
 js/gate.js         Password gate logic (used only by rsvp.html now)
 js/rsvp.js         RSVP form submission logic
 assets/images/home-hero.jpg  The Home hero background photo
@@ -28,6 +29,17 @@ google-apps-script/Code.gs   Backend script — paste into your Google Sheet
 The type is the device's own system sans-serif — nothing to download, no
 third-party font dependency. Colors (including the Baltic-blue accent) are
 CSS variables at the top of `css/style.css`.
+
+**Bilingual (English / Danish).** English is authoritative and lives in the
+HTML; Danish translations live in `js/i18n.js`, keyed by the `data-i18n`
+attribute on each element. A toggle in the nav switches languages and
+remembers the choice (localStorage). The default is English; the quote,
+proper nouns, addresses, links, and the confirmation email are intentionally
+left untranslated. The Danish is a first-pass draft — proofread it in
+`js/i18n.js`. To translate a new piece of text, give its element a
+`data-i18n="some.key"` attribute (English text stays in the HTML) and add
+`"some.key": "…"` to `window.I18N_DA`; for placeholders/aria-labels use
+`data-i18n-ph` / `data-i18n-al`.
 
 **Only `rsvp.html` is gated** now; the other pages are public (all pages
 are `noindex` so they stay out of search results). To gate another page,

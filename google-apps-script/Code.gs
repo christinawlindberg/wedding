@@ -48,11 +48,12 @@ const SHARED_TOKEN = "XkOmJY8lN8TLXSswhpfgKVlI";
 // RSVP_DEADLINE_TEXT in js/config.js, which is what guests actually see.
 const RSVP_DEADLINE = "2027-02-04";
 
-// Emails each party a copy of what they submitted. Fill in the three
+// Emails each party a copy of what they submitted. Fill in the two
 // constants below before turning this on — they appear in the email.
+// (Replies go to whichever Google account deploys the script, so there's
+// no separate contact address to set.)
 const SEND_CONFIRMATION_EMAILS = true;
-const COUPLE_NAMES = "[Partner 1] & [Partner 2]";
-const CONTACT_EMAIL = "[email address]";
+const COUPLE_NAMES = "John & Christina";
 const SITE_URL = "https://christinawlindberg.github.io/wedding/";
 
 function normalizeName(name) {
@@ -459,7 +460,7 @@ function sendConfirmation(members, shared) {
       "Need to change something? Look yourself up again at " + SITE_URL + "rsvp.html",
       "and resubmit — it updates your answer rather than adding a new one.",
       "",
-      "Anything else, just reply to this email or write to " + CONTACT_EMAIL + ".",
+      "Anything else, just reply to this email and it'll come straight to us.",
       "",
       COUPLE_NAMES
     );

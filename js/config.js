@@ -18,10 +18,6 @@ const SITE_CONFIG = {
   // because a lookup returns guests' email addresses.
   SHARED_TOKEN: "XkOmJY8lN8TLXSswhpfgKVlI",
 
-  // Filled into the footer of every page as a mailto: link, and into the
-  // RSVP page's error messages.
-  CONTACT_EMAIL: "[email address]",
-
   // Shown on the RSVP page ("Please respond by …"). The date that's
   // actually *enforced* is RSVP_DEADLINE in Code.gs — set both, and keep
   // them in agreement.

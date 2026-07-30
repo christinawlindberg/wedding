@@ -421,9 +421,11 @@
       }
     }
 
+    // Guests all have our contact details from the invitation, so the site
+    // deliberately carries no email address — error messages just point back
+    // to us directly.
     function contactSentence() {
-      const email = SITE_CONFIG.CONTACT_EMAIL;
-      return email && !email.startsWith("[") ? "email us at " + email : "email us";
+      return "reach out to us";
     }
 
     lookupForm.addEventListener("submit", (e) => {

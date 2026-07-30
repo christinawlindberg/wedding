@@ -43,8 +43,7 @@ The pages are filled in with real copy. A few spots still need you:
   Saturday ceremony/dinner show "Afternoon"/"Evening"; add specifics when
   you have them.
 - **A Bornholm map** on the Travel page, if you want one.
-- Set `CONTACT_EMAIL` and `RSVP_DEADLINE_TEXT` in `js/config.js` (until
-  then the footer email shows as plain text, not a link).
+- Set `RSVP_DEADLINE_TEXT` in `js/config.js` (shown on the RSVP page).
 
 ## 2. Set the guest password
 
@@ -126,8 +125,8 @@ maintain by hand, and a responses tab the script fills in automatically.
 
 2. Go to **Extensions > Apps Script**. Delete the placeholder code and paste
    in the contents of `google-apps-script/Code.gs`. Fill in the constants at
-   the top: `COUPLE_NAMES`, `CONTACT_EMAIL`, and `RSVP_DEADLINE` (leave the
-   deadline `""` to accept responses indefinitely).
+   the top: `COUPLE_NAMES` and `RSVP_DEADLINE` (leave the deadline `""` to
+   accept responses indefinitely).
 3. Click **Deploy > New deployment**. Choose type **Web app**.
    - Execute as: **Me**
    - Who has access: **Anyone**
@@ -212,12 +211,12 @@ a CNAME DNS record at your registrar — ask if you want help with that then.
 - [ ] Replace all placeholder text and images
 - [ ] Set the real password in `js/config.js` (and remember to actually
       tell guests what it is, e.g. in the invitation email)
-- [ ] Set `RSVP_ENDPOINT` and `CONTACT_EMAIL` in `js/config.js`
+- [ ] Set `RSVP_ENDPOINT` in `js/config.js`
 - [ ] Set the deadline in **both** places: `RSVP_DEADLINE_TEXT` in
       `js/config.js` (what guests see) and `RSVP_DEADLINE` in `Code.gs`
       (what's actually enforced)
-- [ ] Fill in `COUPLE_NAMES`, `CONTACT_EMAIL` and `SITE_URL` in `Code.gs` —
-      they appear in the confirmation email guests receive
+- [ ] Fill in `COUPLE_NAMES` and `SITE_URL` in `Code.gs` — they appear in
+      the confirmation email guests receive
 - [ ] Add an `og:image` to `index.html` once you have a photo, so the link
       previews with an image when guests forward it
 - [ ] Fill in `GuestList` with everyone you're inviting before sending

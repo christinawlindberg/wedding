@@ -290,7 +290,7 @@ textarea:focus-visible, select:focus-visible {
 /* ---------- narrow screens ---------- */
 @media (max-width: 640px) {
   .site-nav { position: static; }
-  .site-nav ul { gap: 0.9rem; font-size: 0.72rem; }
+  .site-nav ul { gap: 0.7rem; font-size: 0.64rem; letter-spacing: 0.04em; }
   .lock-icon { display: none; }
   .event { grid-template-columns: 1fr; }
   .event-left { text-align: center; border-right: none; border-bottom: 1px solid var(--hairline); padding: 0 0 0.9rem; }

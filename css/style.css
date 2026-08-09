@@ -126,7 +126,7 @@ p { margin: 0.9rem 0; }
    fixed attachment and simply scrolls the photo, which is a fine fallback. */
 .home {
   background-image: linear-gradient(to bottom, rgba(0,0,0,0.06), rgba(0,0,0,0.2)), url("../assets/images/home-hero.jpg");
-  background-size: cover, contain; background-position: center, center; background-repeat: no-repeat;
+  background-size: cover; background-position: center; background-repeat: no-repeat;
   background-attachment: fixed; background-color: #3f5f7b;
   color: #fff;
 }

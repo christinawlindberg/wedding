@@ -121,41 +121,45 @@ p { margin: 0.9rem 0; }
 .hero .date { font-size: 1.25rem; color: var(--muted); margin-top: 0.9rem; }
 .hr-mark { width: 3.2rem; height: 2px; background: var(--accent); border: 0; margin: 1.5rem auto; opacity: 0.7; }
 
-/* Home hero: a real <img>, not a CSS background, sized to a fixed-height
-   band via object-fit — this is what most sites actually use for a
-   full-bleed hero photo, and it sidesteps the whole family of bugs that
-   come with background-attachment: fixed spanning a very tall element
-   (janky/jumpy scrolling on mobile as the browser chrome shows/hides, and
-   an awkward crop or a gap on desktop once the window gets narrow or
-   short). The photo now only lives in this one fixed-height band; the
-   story content below sits in a normal white section like every other
-   page, so there's nothing tall for a background to misbehave against.
-   min-height uses svh ("small viewport height") rather than vh, so it
-   doesn't resize as a mobile browser's address bar collapses mid-scroll —
-   vh recalculating on every scroll tick is the other classic cause of
-   "weird" mobile scrolling in a photo hero. */
-.home-hero {
-  position: relative; overflow: hidden;
-  min-height: 100svh; display: flex; align-items: center; justify-content: center;
-  text-align: center; color: #fff; padding: 1.5rem;
-}
+/* Home hero: the photo is a real <img>, position: fixed to the viewport,
+   so it stays put behind everything while the white story section below
+   scrolls up and covers it like a curtain — the effect being asked for.
+   position: fixed on a real element is well-supported and performant on
+   mobile (it's how most fixed headers/toolbars work); this is distinct
+   from background-attachment: fixed, which iOS disables outright and
+   which caused the earlier jank when the photo was a CSS background
+   spanning the whole (very tall) hero+story element. `inset: 0` sizes the
+   photo to the exact visible viewport without any vh-unit quirks (no
+   resize as a mobile browser's address bar collapses mid-scroll).
+   The hero text sits in a transparent, normal-flow block that reserves
+   one screen's worth of space (min-height: 100svh) so it lines up over
+   the photo on load; both it and the story section are given z-index
+   above the fixed photo/overlay so they paint over it correctly. */
 .home-hero-img {
-  position: absolute; inset: 0; width: 100%; height: 100%;
+  position: fixed; inset: 0;
   object-fit: cover; object-position: center bottom;
   z-index: 0;
 }
-/* Darkens the photo just enough for the white text to stay readable,
-   without a full background overlay hiding the shot. */
-.home-hero::after {
-  content: ""; position: absolute; inset: 0;
+/* Darkens the photo just enough for the white hero text to stay
+   readable, without a full overlay hiding the shot. */
+.home-hero-overlay {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
   background: linear-gradient(to bottom, rgba(0,0,0,0.08), rgba(0,0,0,0.32));
-  z-index: 1;
 }
-.home-hero-content { position: relative; z-index: 2; }
-.home-hero .kicker { color: #fff; opacity: 0.95; }
-.home-hero h1, .home-hero .date { color: #fff; }
-.home-hero .date { opacity: 0.92; }
-.home-hero .hr-mark { background: #fff; opacity: 0.8; }
+.home-hero-content {
+  position: relative; z-index: 1;
+  min-height: 100svh; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  color: #fff;
+}
+.home-hero-content .kicker { color: #fff; opacity: 0.95; }
+.home-hero-content h1, .home-hero-content .date { color: #fff; }
+.home-hero-content .date { opacity: 0.92; }
+.home-hero-content .hr-mark { background: #fff; opacity: 0.8; }
+
+/* Opaque and stacked above the fixed photo (position + z-index, matching
+   the hero content above), so scrolling this section up covers the photo
+   rather than the photo painting over it. */
+.home-story { position: relative; z-index: 1; background: var(--paper); }
 
 .home-couple { margin: 2.5rem auto; max-width: 340px; }
 .home-couple img {
@@ -315,7 +319,11 @@ textarea:focus-visible, select:focus-visible {
 
 /* ---------- narrow screens ---------- */
 @media (max-width: 640px) {
-  .site-nav { position: static; }
+  /* relative, not static: it needs to be a positioned element for its
+     z-index to have any effect (z-index is a no-op on static elements),
+     which now matters on the home page since it must stack above the
+     fixed hero photo. Layout-wise this behaves identically to static. */
+  .site-nav { position: relative; }
   .site-nav ul { gap: 0.7rem; font-size: 0.64rem; letter-spacing: 0.04em; order: 2; flex-basis: 100%; justify-content: center; }
   .lang-toggle { order: 1; padding: 0.2rem 0.55rem; font-size: 0.66rem; }
   .lock-icon { display: none; }

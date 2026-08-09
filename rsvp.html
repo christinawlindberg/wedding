@@ -45,8 +45,8 @@
 <main data-protected-content>
   <header class="hero hero-compact">
     <div class="wrap">
-      <div class="eyebrow"><span data-i18n="rsvp.respondby">Please Respond By</span> <span data-rsvp-deadline>[RSVP Deadline]</span></div>
       <h1>RSVP</h1>
+      <div class="eyebrow"><span data-i18n="rsvp.respondby">Please Respond By</span> <span data-rsvp-deadline>[RSVP Deadline]</span></div>
     </div>
   </header>
 
@@ -97,14 +97,15 @@
           <div id="members-container"></div>
 
           <!-- Separates each person's individual answers above from the
-               party-level fields below — shown/hidden together with them
-               by refreshSharedVisibility in js/rsvp.js. -->
-          <hr id="sharedSectionDivider" class="section-divider" hidden>
+               party-level fields below. Always shown once the form is —
+               we collect an email either way, so guests declining still
+               get a confirmation. -->
+          <hr id="sharedSectionDivider" class="section-divider">
 
-          <!-- Only needed to send a confirmation and any updates, so only
-               collected if at least one member of the party is accepting —
-               see refreshSharedVisibility in js/rsvp.js. -->
-          <div id="sharedEmailField" class="field" hidden>
+          <!-- Collected regardless of attendance, so declining parties
+               still get a confirmation email — see refreshRequired in
+               js/rsvp.js. -->
+          <div id="sharedEmailField" class="field">
             <label for="sharedEmail" data-i18n="rsvp.email.label">Email</label>
             <input type="email" id="sharedEmail" autocomplete="email">
             <p class="field-hint" data-i18n="rsvp.email.hint">We'll send a copy of your answers here to confirm, or if you ever need to update your RSVP status.</p>

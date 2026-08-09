@@ -189,8 +189,6 @@
     }
 
     const sharedEmail = document.getElementById("sharedEmail");
-    const sharedEmailField = document.getElementById("sharedEmailField");
-    const sharedSectionDivider = document.getElementById("sharedSectionDivider");
     const plusOneField = document.getElementById("plusOneField");
     const plusOneCheckbox = document.getElementById("plusOne");
     const plusOneDetails = document.getElementById("plusOneDetails");
@@ -212,10 +210,12 @@
 
     // A `required` field that's hidden blocks submission with a validation
     // bubble the browser can't position — the form just silently refuses to
-    // submit. So required-ness always tracks visibility.
+    // submit. So required-ness always tracks visibility. Email is always
+    // shown now (declining parties still get a confirmation), so it's
+    // always required; only the plus-one fields still depend on attendance.
     function refreshRequired() {
       const anyAttending = isAnyoneAttending();
-      sharedEmail.required = anyAttending;
+      sharedEmail.required = true;
       const plusOneShown = anyAttending && !plusOneField.hidden && plusOneCheckbox.checked;
       plusOneNameInput.required = plusOneShown;
       plusOneLunchRadios.forEach((r) => { r.required = plusOneShown; });
@@ -225,18 +225,14 @@
       return rsvpForm.querySelectorAll('input[name$="_attending"][value="Yes"]:checked').length > 0;
     }
 
-    // Shared section (plus-one/children/etc.) and the email field show if
-    // at least one member of the party is attending — email is only
-    // needed to send a confirmation and any updates, and declining parties
-    // won't need either. Scoped to attending radios specifically — matching
+    // The plus-one/children/etc. section only makes sense if someone's
+    // attending. The email field and its divider stay visible regardless —
+    // scoped to attending radios specifically for `details`, since matching
     // any input[value="Yes"] would also catch the plus-one checkbox (which
-    // shares that value) and could leave the section stuck open after
-    // everyone switches to declining.
+    // shares that value).
     function refreshSharedVisibility() {
       const anyAttending = isAnyoneAttending();
       show(details, anyAttending);
-      show(sharedEmailField, anyAttending);
-      show(sharedSectionDivider, anyAttending);
       refreshRequired();
     }
     rsvpForm.addEventListener("change", (e) => {

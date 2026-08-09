@@ -48,16 +48,32 @@ const SHARED_TOKEN = "XkOmJY8lN8TLXSswhpfgKVlI";
 // RSVP_DEADLINE_TEXT in js/config.js, which is what guests actually see.
 const RSVP_DEADLINE = "2027-02-04";
 
-// Emails each party a copy of what they submitted. Fill in the two
-// constants below before turning this on — they appear in the email.
-// (Replies go to whichever Google account deploys the script, so there's
-// no separate contact address to set.)
+// Emails each party a copy of what they submitted. Fill in the constants
+// below before turning this on — they appear in the email.
 const SEND_CONFIRMATION_EMAILS = true;
 const COUPLE_NAMES = "John & Christina";
 const SITE_URL = "https://christinawlindberg.github.io/wedding/";
 
+// Plaintext password shown in the confirmation email so guests can look
+// themselves up again later. Purely informational — keep this in sync by
+// hand with whatever password's hash is in js/config.js as PASSWORD_HASH.
+const RSVP_PASSWORD = "oliver2027";
+
+// "auto" picks the confirmation wording based on whether anyone in the
+// party is attending (see sendConfirmation). Set to "neutral" to always
+// send the same wording regardless of attendance.
+const EMAIL_TONE = "auto";
+
 function normalizeName(name) {
   return String(name || "").trim().toLowerCase().replace(/\s+/g, " ");
+}
+
+// "A, B & C" — for addressing a multi-person party in the confirmation
+// email greeting.
+function joinNames(names) {
+  return names.length > 1
+    ? names.slice(0, -1).join(", ") + " & " + names[names.length - 1]
+    : names[0];
 }
 
 function sheetAsObjects(sheet) {
@@ -429,46 +445,64 @@ function doPost(e) {
 // to ask whether it worked. Failures here are swallowed on purpose: the
 // RSVP is already saved, and a mail quota problem shouldn't look like a
 // failed submission.
+//
+// Wording depends on whether anyone in the party is attending (unless
+// EMAIL_TONE is "neutral", which always uses the same wording) — see the
+// three templates below.
 function sendConfirmation(members, shared) {
   if (!SEND_CONFIRMATION_EMAILS) return;
 
+  // Collected regardless of attendance (see refreshRequired in js/rsvp.js),
+  // so a fully-declining party still gets a confirmation.
   const to = members.map((m) => m.email).filter(Boolean)[0];
   if (!to) return;
 
   try {
-    const lines = ["Thanks for replying — here's what we have on record:", ""];
-
+    const responseLines = [];
     members.forEach((m) => {
-      lines.push(m.attending === "Yes" ? m.name + " — attending" : m.name + " — not attending");
+      responseLines.push(m.attending === "Yes" ? m.name + " — attending" : m.name + " — not attending");
       if (m.attending === "Yes") {
-        if (m.dietary) lines.push("    Dietary: " + m.dietary);
-        if (m.buffet === "Yes") lines.push("    Coming to the Sunday lunch");
+        if (m.dietary) responseLines.push("    Dietary: " + m.dietary);
+        if (m.buffet === "Yes") responseLines.push("    Coming to the Sunday lunch");
       }
     });
-
     if (shared.PlusOne === "Yes") {
-      lines.push("Plus-one: " + (shared.PlusOneName || "(name to come)"));
-      if (shared.PlusOneDietary) lines.push("    Dietary: " + shared.PlusOneDietary);
-      if (shared.PlusOneLunch === "Yes") lines.push("    Coming to the Sunday lunch");
+      responseLines.push("Plus-one: " + (shared.PlusOneName || "(name to come)"));
+      if (shared.PlusOneDietary) responseLines.push("    Dietary: " + shared.PlusOneDietary);
+      if (shared.PlusOneLunch === "Yes") responseLines.push("    Coming to the Sunday lunch");
     }
-    if (shared.Children) lines.push("Children: " + shared.Children);
-    if (shared.SongRequests) lines.push("Song requests: " + shared.SongRequests);
-    if (shared.Notes) lines.push("Notes: " + shared.Notes);
+    if (shared.Children) responseLines.push("Children: " + shared.Children);
+    if (shared.SongRequests) responseLines.push("Song requests: " + shared.SongRequests);
+    if (shared.Notes) responseLines.push("Notes: " + shared.Notes);
 
-    lines.push(
+    const anyAttending = members.some((m) => m.attending === "Yes");
+
+    let intro;
+    if (EMAIL_TONE === "neutral") {
+      intro = "Thank you for responding to our RSVP invitation. We hope you are able to attend our celebration. Below is a copy of your responses.";
+    } else if (anyAttending) {
+      intro = "Thank you for submitting an RSVP to attend our wedding. Below is a copy of your responses. We look forward to seeing you there!";
+    } else {
+      intro = "Thank you for responding to our RSVP invitation. We are sorry that you are unable to attend, but we appreciate your reply. Below is a copy of your responses.";
+    }
+
+    const body = [
+      "Dear " + joinNames(members.map((m) => m.name)) + ",",
       "",
-      "Need to change something? Look yourself up again at " + SITE_URL + "rsvp.html",
-      "and resubmit — it updates your answer rather than adding a new one.",
+      intro,
       "",
-      "Anything else, just reply to this email and it'll come straight to us.",
+      responseLines.join("\n"),
       "",
-      COUPLE_NAMES
-    );
+      "Please contact us if there are any errors, or if you have any questions or concerns. John can be reached at jsoltisd@gmail.com or +1 (248) 996-7989. Christina can be contacted at christina.lindberg@live.com or +1 (425) 273-3517. You can also update your RSVP on the website at any time using the link from the RSVP invitation, or by entering the url " + SITE_URL + "index.html and searching your name. If you use the above url, you will need to enter a password to modify the RSVP. The password to the website is " + RSVP_PASSWORD + ".",
+      "",
+      "Thank you,",
+      "Christina Lindberg & John Soltis",
+    ].join("\n");
 
     MailApp.sendEmail({
       to: to,
       subject: "We've got your RSVP — " + COUPLE_NAMES,
-      body: lines.join("\n"),
+      body: body,
     });
   } catch (err) {
     console.error("Confirmation email failed: " + err);

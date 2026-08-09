@@ -121,41 +121,46 @@ p { margin: 0.9rem 0; }
 .hero .date { font-size: 1.25rem; color: var(--muted); margin-top: 0.9rem; }
 .hr-mark { width: 3.2rem; height: 2px; background: var(--accent); border: 0; margin: 1.5rem auto; opacity: 0.7; }
 
-/* Home: the photo is pinned to the viewport so the names AND the story
-   scroll up over a stationary image, all in white. iOS Safari ignores
-   fixed attachment and simply scrolls the photo, which is a fine fallback.
-   "cover" scales the photo to always fill the viewport on both axes (no
-   gaps at any window size), and "bottom" anchors the crop so the coastline
-   at the bottom of the shot stays visible — any cropping happens off the
-   top or sides instead. (A fixed-width size like "100% auto" leaves a gap
-   whenever the window's aspect ratio makes the scaled photo shorter than
-   the viewport, since nothing fills in the remainder above it.)
-   Kept "fixed" on every screen size (no mobile-specific "scroll" override):
-   background-position is relative to the viewport under fixed attachment,
-   which is what anchors the coastline to the bottom of the *screen* — with
-   "scroll" it anchors instead to the bottom of this whole (very tall,
-   hero + story) element, pushing the visible photo strip far down the
-   page on load. */
-.home {
-  background-image: linear-gradient(to bottom, rgba(0,0,0,0.06), rgba(0,0,0,0.2)), url("../assets/images/home-hero.jpg");
-  background-size: cover; background-position: center, center bottom; background-repeat: no-repeat;
-  background-attachment: fixed; background-color: #3f5f7b;
-  color: #fff;
+/* Home hero: a real <img>, not a CSS background, sized to a fixed-height
+   band via object-fit — this is what most sites actually use for a
+   full-bleed hero photo, and it sidesteps the whole family of bugs that
+   come with background-attachment: fixed spanning a very tall element
+   (janky/jumpy scrolling on mobile as the browser chrome shows/hides, and
+   an awkward crop or a gap on desktop once the window gets narrow or
+   short). The photo now only lives in this one fixed-height band; the
+   story content below sits in a normal white section like every other
+   page, so there's nothing tall for a background to misbehave against.
+   min-height uses svh ("small viewport height") rather than vh, so it
+   doesn't resize as a mobile browser's address bar collapses mid-scroll —
+   vh recalculating on every scroll tick is the other classic cause of
+   "weird" mobile scrolling in a photo hero. */
+.home-hero {
+  position: relative; overflow: hidden;
+  min-height: 100svh; display: flex; align-items: center; justify-content: center;
+  text-align: center; color: #fff; padding: 1.5rem;
 }
-.home .kicker { color: #fff; opacity: 0.95; }
-.home h1, .home .date, .home .lede { color: #fff; }
-.home .date { opacity: 0.92; }
-.home .hr-mark { background: #fff; opacity: 0.8; }
-.home .section { padding-top: 0; padding-bottom: 4rem; }
-.home .lede { margin-top: 0; }
+.home-hero-img {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; object-position: center bottom;
+  z-index: 0;
+}
+/* Darkens the photo just enough for the white text to stay readable,
+   without a full background overlay hiding the shot. */
+.home-hero::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.08), rgba(0,0,0,0.32));
+  z-index: 1;
+}
+.home-hero-content { position: relative; z-index: 2; }
+.home-hero .kicker { color: #fff; opacity: 0.95; }
+.home-hero h1, .home-hero .date { color: #fff; }
+.home-hero .date { opacity: 0.92; }
+.home-hero .hr-mark { background: #fff; opacity: 0.8; }
+
 .home-couple { margin: 2.5rem auto; max-width: 340px; }
 .home-couple img {
   display: block; width: 100%; border-radius: 12px;
-  box-shadow: 0 10px 34px rgba(0,0,0,0.4);
-}
-
-.hero-photo {
-  text-align: center; padding: 4.5rem 1.5rem 0;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.18);
 }
 
 /* ---------- callout ---------- */
@@ -290,7 +295,6 @@ input[type="password"], select, textarea {
 
 /* ---------- footer photo banner ---------- */
 .page-banner { width: 100%; height: clamp(150px, 24vh, 240px); background-size: cover; background-position: center; margin-top: 3rem; }
-.home .page-banner { margin-top: 0; }
 
 .page-quote {
   margin: 3.5rem auto 0; max-width: 34rem; text-align: center;
@@ -321,7 +325,6 @@ textarea:focus-visible, select:focus-visible {
   .event-btns { justify-content: center; }
   .radio-row { flex-direction: column; gap: 0.75rem; }
   .nested-fields { margin-left: 0.75rem; padding-left: 0.85rem; }
-  .hero-photo { padding-top: 3.5rem; }
   .gallery, .figure-pair { grid-template-columns: 1fr; }
   .gallery img { height: 220px; }
 }

@@ -124,9 +124,12 @@ p { margin: 0.9rem 0; }
 /* Home: the photo is pinned to the viewport so the names AND the story
    scroll up over a stationary image, all in white. iOS Safari ignores
    fixed attachment and simply scrolls the photo, which is a fine fallback.
-   The photo layer is sized to the full width (100% auto) and anchored to
-   the bottom, so it always fills edge-to-edge and the coastline at the
-   bottom of the shot stays visible — any cropping happens off the top.
+   "cover" scales the photo to always fill the viewport on both axes (no
+   gaps at any window size), and "bottom" anchors the crop so the coastline
+   at the bottom of the shot stays visible — any cropping happens off the
+   top or sides instead. (A fixed-width size like "100% auto" leaves a gap
+   whenever the window's aspect ratio makes the scaled photo shorter than
+   the viewport, since nothing fills in the remainder above it.)
    Kept "fixed" on every screen size (no mobile-specific "scroll" override):
    background-position is relative to the viewport under fixed attachment,
    which is what anchors the coastline to the bottom of the *screen* — with
@@ -135,7 +138,7 @@ p { margin: 0.9rem 0; }
    page on load. */
 .home {
   background-image: linear-gradient(to bottom, rgba(0,0,0,0.06), rgba(0,0,0,0.2)), url("../assets/images/home-hero.jpg");
-  background-size: cover, 100% auto; background-position: center, center bottom; background-repeat: no-repeat;
+  background-size: cover; background-position: center, center bottom; background-repeat: no-repeat;
   background-attachment: fixed; background-color: #3f5f7b;
   color: #fff;
 }

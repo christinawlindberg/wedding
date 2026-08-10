@@ -26,7 +26,7 @@ window.I18N_DA = {
   // ---- home ----
   "home.kicker": "Brylluppet mellem",
   "home.date": "4. september 2027 &middot; Snogeb&aelig;k, Bornholm",
-  "home.story": "John og Christina m&oslash;dte hinanden i 2019 p&aring; Johns Hopkins i Baltimore. De var begge indskrevet p&aring; Johns Hopkins&rsquo; ph.d.-program i astronomi og astrofysik. Gennem forel&aelig;sninger, f&aelig;lles l&aelig;segrupper og ugentlige fredagsbarer blev de f&oslash;rst venner og forelskede sig derefter hurtigt i hinanden. P&aring; trods af en pandemi, praktikophold, rejser og det ber&oslash;gtede akademiske to-legeme-problem er Christina og John kun kommet t&aelig;ttere p&aring; hinanden. De ser ceremonien og festen som en anledning til at fejre en milep&aelig;l i deres forhold sammen med deres n&aelig;rmeste venner og familie.",
+  "home.story": "John og Christina m&oslash;dte hinanden i 2019 p&aring; Johns Hopkins i Baltimore. De var begge indskrevet p&aring; Johns Hopkins&rsquo; ph.d.-program i astronomi og astrofysik. Gennem forel&aelig;sninger, f&aelig;lles l&aelig;segrupper og ugentlige fredagsbarer blev de f&oslash;rst venner og forelskede sig derefter hurtigt i hinanden. P&aring; trods af en pandemi, praktikophold, rejser og det berygtede akademiske to-legeme-problem er Christina og John kun kommet t&aelig;ttere p&aring; hinanden. De ser ceremonien og festen som en anledning til at fejre en milep&aelig;l i deres forhold sammen med deres n&aelig;rmeste venner og familie.",
 
   // ---- schedule ----
   "sched.fri": "Fredag den 3. september 2027",
@@ -39,7 +39,7 @@ window.I18N_DA = {
   "sched.e2.title": "Kirkelig vielse",
   "sched.e2.time": "Eftermiddag &ndash; tidspunkt f&oslash;lger",
   "sched.e2.attire": "P&aring;kl&aelig;dning: Semiformel",
-  "sched.e2.desc": "Ceremonien foreg&aring;r p&aring; dansk og varer omkring en time &mdash; se siden Om os for, hvad du kan forvente.",
+  "sched.e2.desc": "Ceremonien foreg&aring;r p&aring; dansk og varer omkring en time &mdash; se siden Info for, hvad du kan forvente.",
   "sched.e3.title": "Middag, kage og fest",
   "sched.e3.time": "Aften &ndash; 17.00",
   "sched.e3.attire": "P&aring;kl&aelig;dning: Semiformel &middot; dansevenligt frem for alt",
@@ -82,11 +82,11 @@ window.I18N_DA = {
   "about.trad.h": "Danske bryllupstraditioner",
   "about.trad.intro": "P&aring; nogle m&aring;der minder danske bryllupper meget om amerikanske. Der er dog et par ting, hvor de adskiller sig, som vi gerne vil g&oslash;re opm&aelig;rksomme p&aring; i god tid, s&aring; alle kan v&aelig;re med.",
   "about.trad.t1.h": "Kirke",
-  "about.trad.t1.p": "Ceremonien afholdes overvejende p&aring; dansk og forventes at vare omkring en time. Der vil v&aelig;re flere salmer, som I er velkomne til at synge med p&aring;. Bagefter kaster folk enten ris eller puster s&aelig;bebobler mod parret, n&aring;r de forlader kirken.",
+  "about.trad.t1.p": "Ceremonien afholdes overvejende p&aring; dansk og forventes at vare omkring en time. Der vil v&aelig;re flere salmer, som I er velkomne til at synge med p&aring;. Bagefter kaster folk enten fuglefr&oslash; eller puster s&aelig;bebobler mod parret, n&aring;r de forlader kirken.",
   "about.trad.t2.h": "Taler",
   "about.trad.t2.p": "Det er skik at have nogle f&aring; planlagte taler. I Danmark er enhver, der har lyst til at holde en lille tale eller udbringe en sk&aring;l, velkommen til det gennem middagen &mdash; danskere skriver endda nye tekster til kendte sange, som alle kan synge med p&aring;. Vil du sige et par ord, s&aring; henvend dig til toastmasteren ved middagens begyndelse. Vi byder taler velkomne p&aring; b&aring;de dansk og engelsk.",
   "about.trad.t3.h": "Dans",
-  "about.trad.t3.p": "Selvom ethvert godt bryllup inkluderer dans, kan danskerne li&rsquo; at give den gas. V&aelig;r klar til at danse til langt ud p&aring; aftenen. Bliver du sulten, er der forst&aelig;rkninger ved midnat. Drikkevarer fl&oslash;der frit hele vejen igennem.",
+  "about.trad.t3.p": "Selvom ethvert godt bryllup inkluderer dans, kan danskerne li&rsquo; at give den gas. V&aelig;r klar til at danse til langt ud p&aring; aftenen. Bliver du sulten, er der forst&aelig;rkninger ved midnat. Drikkevarer flyder frit hele vejen igennem.",
   "about.gifts.h": "Gaver &amp; &oslash;nskeliste",
   "about.gifts.p": "Der er ingen &oslash;nskeliste til dette bryllup, og John og Christina forventer ikke gaver. Jeres tilstedev&aelig;relse er alt, der &oslash;nskes. Hvis I insisterer p&aring; at give parret en gave, vil de s&aelig;tte pris p&aring;, at I sender gaver, kontanter eller checks til deres adresse i Boston. Undlad venligst at rejse med gaver til Bornholm, da det vil skabe vanskeligheder, n&aring;r John og Christina skal rejse hjem til USA. Digital pengeoverf&oslash;rsel er ogs&aring; en mulighed. Kontakt venligst John eller Christina for flere oplysninger.",
 
@@ -94,7 +94,7 @@ window.I18N_DA = {
   "travel.h1": "Rejsen til Danmark",
   "travel.t1.l1": "Danmark er et sikkert og venligt rejsem&aring;l &mdash; medlem af EU og Schengen-omr&aring;det, i den centraleurop&aelig;iske tidszone (6 timer foran amerikansk &oslash;stkysttid).",
   "travel.t1.l2": "S&oslash;rg for, at dit pas er gyldigt. I skrivende stund beh&oslash;ver amerikanske pasindehavere ikke visum p&aring; forh&aring;nd, men tjek venligst officiel vejledning, inden du rejser.",
-  "travel.t1.l3": "Mange amerikanske byer flyver direkte til K&oslash;benhavn (CPH). Fra Michigan skal du sandsynligvis mellemlande i en anden amerikansk by. Billige flyvninger via Island eller Portugal er ogs&aring; almindelige &mdash; John og Christina har taget dem mange gange.",
+  "travel.t1.l3": "Der er direkte flyvninger til K&oslash;benhavn (CPH) fra mange amerikanske byer. Fra Michigan skal du sandsynligvis mellemlande i en anden amerikansk by. Der findes ogs&aring; billige afgange via Island eller Portugal &mdash; John og Christina har taget dem mange gange.",
   "travel.t1.l4": "Danmark er meget engelskvenligt, men det kan stadig betale sig at hente en overs&aelig;ttelses-app. Google Translate kan overs&aelig;tte tekst fra fotos, s&aring; du kan l&aelig;se skilte og dokumenter med din telefons kamera.",
   "travel.h2": "S&aring;dan kommer du til Bornholm (R&oslash;nne)",
   "travel.fig1": "De vigtigste steder for weekenden: <strong>1</strong> f&aelig;rgeterminalen i R&oslash;nne og <strong>2</strong> lufthavnen, begge n&aelig;r vestkysten; dern&aelig;st <strong>3</strong> kirken, <strong>4</strong> Snogeb&aelig;k (Folkets Hus og s&oslash;ndagens fiskefrokost) og <strong>5</strong> Nex&oslash;, den n&aelig;rmeste st&oslash;rre by &mdash; alt sammen ved &oslash;ens syd&oslash;stlige spids.",

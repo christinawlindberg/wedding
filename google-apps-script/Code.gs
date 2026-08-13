@@ -8,24 +8,36 @@
 // This spreadsheet needs two tabs:
 //
 // 1. "GuestList" — one row per invited person, header row:
-//      PartyID | Name | PlusOneAllowed | ChildrenAllowed
+//      PartyID | Name | PlusOneAllowed | ChildrenAllowed | BachEventAllowed
 //    - Leave PartyID blank for a solo invitation.
 //    - For a couple you're treating as one invitation, give both of their
 //      rows the SAME PartyID (any string, e.g. "smith"). They'll then be
 //      matched together whether a guest types either person's name or the
 //      combined "John & Jane Smith" form. Larger families work the same way,
 //      but are matched by individual name only.
-//    - PlusOneAllowed / ChildrenAllowed: TRUE or FALSE (checkbox columns
-//      work well). For a couple, set on either row — either being TRUE is
-//      enough. These are party-level: a couple invited jointly still
-//      confirms attendance and dietary needs individually below, but
-//      shares one plus-one/children answer.
+//    - PlusOneAllowed / ChildrenAllowed / BachEventAllowed: TRUE or FALSE
+//      (checkbox columns work well). For a couple, set on either row —
+//      either being TRUE is enough. These are party-level: a couple invited
+//      jointly still confirms attendance and dietary needs individually
+//      below, but shares one plus-one/children answer.
+//    - BachEventAllowed gates the Friday bachelor/bachelorette question, so
+//      only the guests invited to it are asked. Each attending member picks
+//      their own event (and the plus-one gets their own pick); leaving the
+//      column blank/FALSE hides the question entirely.
 //
 // 2. "RSVPs" — where submitted responses land, header row:
-//      PartyID | PartyKey | Name | Email | Attending | Dietary | Buffet | DeclineNote | PlusOne | PlusOneName | PlusOneDietary | PlusOneLunch | Children | SongRequests | Notes | Timestamp | FirstResponded | SubmissionID
+//      PartyID | PartyKey | Name | Email | Attending | Dietary | Buffet | BachEvent | DeclineNote | PlusOne | PlusOneName | PlusOneDietary | PlusOneLunch | PlusOneBachEvent | Children | SongRequests | Notes | Timestamp | FirstResponded | SubmissionID
 //    You don't need to create rows here yourself — doPost fills them in,
 //    one row per person (so a couple's joint RSVP still produces two rows,
 //    sharing PartyID and the PlusOne/Children/etc. columns).
+//    Everything here is looked up by header NAME, not position, so the
+//    column order above doesn't matter — to add a new one (e.g. BachEvent /
+//    PlusOneBachEvent) just append it to the right of the existing headers.
+//    A column that doesn't exist is simply not written, so an out-of-date
+//    sheet degrades quietly rather than erroring.
+//      BachEvent    which Friday event this person picked: "Bike ride",
+//                   "Picnic", or "Opt out" (blank if they weren't invited)
+//      PlusOneBachEvent  the same, for the party's plus-one
 //    The last four columns are bookkeeping, safe to ignore when reading:
 //      PartyKey     which invitation this row belongs to (see groupGuestList)
 //      Timestamp    when this row was last written
@@ -219,6 +231,7 @@ function findRsvpRow(values, col, partyKey, name, ambiguous) {
 function buildPartyResult(party, values, col, guestList) {
   const plusOneAllowed = party.rows.some((row) => isTrue(row["PlusOneAllowed"]));
   const childrenAllowed = party.rows.some((row) => isTrue(row["ChildrenAllowed"]));
+  const bachEventAllowed = party.rows.some((row) => isTrue(row["BachEventAllowed"]));
   const partyKey = party.key;
 
   const cell = (rowIndex, column) =>
@@ -234,6 +247,7 @@ function buildPartyResult(party, values, col, guestList) {
         attending: cell(i, "Attending"),
         dietary: cell(i, "Dietary"),
         buffet: cell(i, "Buffet"),
+        bachEvent: cell(i, "BachEvent"),
         declineNote: cell(i, "DeclineNote"),
         submissionId: String(cell(i, "SubmissionID") || ""),
       } : null,
@@ -254,12 +268,14 @@ function buildPartyResult(party, values, col, guestList) {
     partyKey: partyKey,
     plusOneAllowed: plusOneAllowed,
     childrenAllowed: childrenAllowed,
+    bachEventAllowed: bachEventAllowed,
     members: members,
     existingShared: sharedIndex >= 0 ? {
       plusOne: cell(sharedIndex, "PlusOne"),
       plusOneName: cell(sharedIndex, "PlusOneName"),
       plusOneDietary: cell(sharedIndex, "PlusOneDietary"),
       plusOneLunch: cell(sharedIndex, "PlusOneLunch"),
+      plusOneBachEvent: cell(sharedIndex, "PlusOneBachEvent"),
       children: cell(sharedIndex, "Children"),
       songRequests: cell(sharedIndex, "SongRequests"),
       notes: cell(sharedIndex, "Notes"),
@@ -367,6 +383,7 @@ function doPost(e) {
       PlusOneName: data.plusOneName || "",
       PlusOneDietary: data.plusOneDietary || "",
       PlusOneLunch: data.plusOneLunch || "No",
+      PlusOneBachEvent: data.plusOneBachEvent || "",
       Children: data.children || "",
       SongRequests: data.songRequests || "",
       Notes: data.notes || "",
@@ -384,6 +401,7 @@ function doPost(e) {
         attending: data["member" + n + "_attending"],
         dietary: data["member" + n + "_dietary"],
         buffet: data["member" + n + "_buffet"] || "No",
+        bachEvent: data["member" + n + "_bachEvent"] || "",
         declineNote: data["member" + n + "_declineNote"],
       });
       n++;
@@ -403,11 +421,13 @@ function doPost(e) {
           case "Attending": return member.attending || "";
           case "Dietary": return member.dietary || "";
           case "Buffet": return member.buffet || "No";
+          case "BachEvent": return member.bachEvent || "";
           case "DeclineNote": return member.declineNote || "";
           case "PlusOne": return shared.PlusOne;
           case "PlusOneName": return shared.PlusOneName;
           case "PlusOneDietary": return shared.PlusOneDietary;
           case "PlusOneLunch": return shared.PlusOneLunch;
+          case "PlusOneBachEvent": return shared.PlusOneBachEvent;
           case "Children": return shared.Children;
           case "SongRequests": return shared.SongRequests;
           case "Notes": return shared.Notes;
@@ -441,6 +461,17 @@ function doPost(e) {
   }
 }
 
+// Spells out a stored BachEvent value for the confirmation email. Returns
+// "" for "Opt out" and for anyone who wasn't invited (blank), so the caller
+// simply omits the line rather than printing "Friday event: Opt out".
+function bachEventLabel(value) {
+  switch (String(value || "").trim()) {
+    case "Bike ride": return "Bike ride with John (Mikkeller, Årsdale)";
+    case "Picnic": return "Beach picnic with Christina (Snogebæk)";
+    default: return "";
+  }
+}
+
 // Guests get no receipt otherwise — they submit into a void and then email
 // to ask whether it worked. Failures here are swallowed on purpose: the
 // RSVP is already saved, and a mail quota problem shouldn't look like a
@@ -464,12 +495,16 @@ function sendConfirmation(members, shared) {
       if (m.attending === "Yes") {
         if (m.dietary) responseLines.push("    Dietary: " + m.dietary);
         if (m.buffet === "Yes") responseLines.push("    Coming to the Sunday lunch");
+        const bach = bachEventLabel(m.bachEvent);
+        if (bach) responseLines.push("    Friday event: " + bach);
       }
     });
     if (shared.PlusOne === "Yes") {
       responseLines.push("Plus-one: " + (shared.PlusOneName || "(name to come)"));
       if (shared.PlusOneDietary) responseLines.push("    Dietary: " + shared.PlusOneDietary);
       if (shared.PlusOneLunch === "Yes") responseLines.push("    Coming to the Sunday lunch");
+      const plusOneBach = bachEventLabel(shared.PlusOneBachEvent);
+      if (plusOneBach) responseLines.push("    Friday event: " + plusOneBach);
     }
     if (shared.Children) responseLines.push("Children: " + shared.Children);
     if (shared.SongRequests) responseLines.push("Song requests: " + shared.SongRequests);

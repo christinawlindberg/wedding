@@ -1,8 +1,8 @@
-PartyID,Name,PlusOneAllowed,ChildrenAllowed
-,Alex Chen,FALSE,FALSE
-,Sam Rivera,TRUE,FALSE
-,Morgan Lee,FALSE,TRUE
-smith,John Smith,FALSE,TRUE
-smith,Jane Smith,FALSE,TRUE
-lee-park,Taylor Lee,TRUE,FALSE
-lee-park,Jordan Park,TRUE,FALSE
+PartyID,Name,PlusOneAllowed,ChildrenAllowed,BachEventAllowed
+,Alex Chen,FALSE,FALSE,FALSE
+,Sam Rivera,TRUE,FALSE,TRUE
+,Morgan Lee,FALSE,TRUE,FALSE
+smith,John Smith,FALSE,TRUE,TRUE
+smith,Jane Smith,FALSE,TRUE,TRUE
+lee-park,Taylor Lee,TRUE,FALSE,FALSE
+lee-park,Jordan Park,TRUE,FALSE,FALSE

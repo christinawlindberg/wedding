@@ -234,6 +234,9 @@ input[type="password"], select, textarea {
 }
 .field { margin-bottom: 1.25rem; }
 .radio-row { display: flex; gap: 1.5rem; flex-wrap: wrap; }
+/* Options that are full phrases rather than Yes/No always stack: in a
+   wrapping row they break at arbitrary points, orphaning the last one. */
+.radio-row.radio-stack { flex-direction: column; gap: 0.75rem; }
 
 .form-status { margin-top: 1rem; font-size: 0.9rem; }
 .form-status:empty { margin-top: 0; }

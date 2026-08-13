@@ -84,6 +84,14 @@
     return d.value;
   }
 
+  // Stored Friday-event values (which are what land in the sheet) mapped to
+  // their translatable labels. "Opt out" is deliberately absent so the
+  // summary omits the line entirely, the same way a "No" buffet answer is.
+  const BACH_LABEL_KEYS = {
+    "Bike ride": "rsvp.bach.bike",
+    "Picnic": "rsvp.bach.picnic",
+  };
+
   document.addEventListener("DOMContentLoaded", () => {
     const lookupForm = document.getElementById("lookup-form");
     const lookupStep = document.getElementById("lookup-step");
@@ -108,7 +116,7 @@
     // plus per-member ids so every label actually points at its own input —
     // otherwise a couple's two identical "Dietary" fields are indis-
     // tinguishable to a screen reader.
-    function buildMemberBlocks(names) {
+    function buildMemberBlocks(names, bachEventAllowed) {
       membersContainer.innerHTML = "";
       const blocks = [];
 
@@ -126,6 +134,10 @@
         const lunchLabel = fragment.querySelector(".member-lunch-label");
         const lunchGroup = fragment.querySelector(".member-lunch-radios");
         const lunchWrap = fragment.querySelector(".member-lunch-wrap");
+        const bachRadios = fragment.querySelectorAll(".member-bach-field");
+        const bachLabel = fragment.querySelector(".member-bach-label");
+        const bachGroup = fragment.querySelector(".member-bach-radios");
+        const bachWrap = fragment.querySelector(".member-bach-wrap");
         const declineNoteField = fragment.querySelector(".member-decline-note-field");
         const declineNoteWrap = fragment.querySelector(".member-decline-note-wrap");
         const declineNoteLabel = fragment.querySelector(".member-decline-note-label");
@@ -137,6 +149,7 @@
         emailField.name = `member${i}_email`;
         dietaryField.name = `member${i}_dietary`;
         lunchRadios.forEach((r) => { r.name = `member${i}_buffet`; });
+        bachRadios.forEach((r) => { r.name = `member${i}_bachEvent`; });
         declineNoteField.name = `member${i}_declineNote`;
 
         // Every label points at its own input. The visible text stays short
@@ -159,21 +172,29 @@
         lunchLabel.id = `member${i}-lunch-label`;
         lunchGroup.setAttribute("aria-labelledby", `member${i}-heading member${i}-lunch-label`);
 
+        bachLabel.id = `member${i}-bach-label`;
+        bachGroup.setAttribute("aria-labelledby", `member${i}-heading member${i}-bach-label`);
+
         radios.forEach((r) => {
           r.name = `member${i}_attending`;
           r.required = true;
           r.addEventListener("change", () => {
-            // Dietary/buffet questions only matter if this specific
-            // person is attending; a decline note only makes sense if
-            // they're not. The buffet is a required yes/no once shown, so
-            // its required-ness tracks visibility (a hidden required field
-            // blocks submission with an un-positionable bubble).
+            // Dietary/buffet/Friday-event questions only matter if this
+            // specific person is attending; a decline note only makes sense
+            // if they're not. The buffet and the Friday event are both a
+            // required pick once shown, so their required-ness tracks
+            // visibility (a hidden required field blocks submission with an
+            // un-positionable bubble). The Friday event additionally only
+            // appears for parties invited to it.
             const attending = r.value === "Yes" && r.checked;
             const declining = r.value === "No" && r.checked;
+            const bachShown = attending && !!bachEventAllowed;
             show(dietaryWrap, attending);
+            show(bachWrap, bachShown);
             show(lunchWrap, attending);
             show(declineNoteWrap, declining);
             lunchRadios.forEach((lr) => { lr.required = attending; });
+            bachRadios.forEach((br) => { br.required = bachShown; });
           });
         });
 
@@ -182,7 +203,7 @@
         // now so it matches the current language (it's also re-translated on
         // toggle, since it's now part of the document).
         if (window.i18n) window.i18n.translate(block);
-        blocks.push({ block, heading, nameField, emailField, dietaryField, dietaryWrap, lunchRadios, lunchWrap, declineNoteField, declineNoteWrap });
+        blocks.push({ block, heading, nameField, emailField, dietaryField, dietaryWrap, lunchRadios, lunchWrap, bachRadios, bachWrap, declineNoteField, declineNoteWrap });
       });
 
       return blocks;
@@ -196,6 +217,9 @@
     const plusOneDietaryInput = document.getElementById("plusOneDietary");
     const plusOneLunchRadios = rsvpForm.querySelectorAll('input[name="plusOneLunch"]');
     const setPlusOneLunch = (val) => plusOneLunchRadios.forEach((r) => { r.checked = r.value === val; });
+    const plusOneBachField = document.getElementById("plusOneBachField");
+    const plusOneBachRadios = rsvpForm.querySelectorAll('input[name="plusOneBachEvent"]');
+    const setPlusOneBach = (val) => plusOneBachRadios.forEach((r) => { r.checked = r.value === val; });
     const childrenField = document.getElementById("childrenField");
     const childrenInput = document.getElementById("children");
     const songRequestsInput = document.getElementById("songRequests");
@@ -219,6 +243,9 @@
       const plusOneShown = anyAttending && !plusOneField.hidden && plusOneCheckbox.checked;
       plusOneNameInput.required = plusOneShown;
       plusOneLunchRadios.forEach((r) => { r.required = plusOneShown; });
+      // plusOneBachField itself is only un-hidden for parties invited to the
+      // Friday events (see applyMatch), so this stays optional otherwise.
+      plusOneBachRadios.forEach((r) => { r.required = plusOneShown && !plusOneBachField.hidden; });
     }
 
     function isAnyoneAttending() {
@@ -249,7 +276,7 @@
       partyKeyField.value = match.partyKey || "";
       partyNamesEl.textContent = joinNames(match.members.map((m) => m.name));
 
-      const memberBlocks = buildMemberBlocks(match.members.map((m) => m.name));
+      const memberBlocks = buildMemberBlocks(match.members.map((m) => m.name), match.bachEventAllowed);
       sharedEmail.value = "";
       match.members.forEach((member, i) => {
         const m = memberBlocks[i];
@@ -267,15 +294,23 @@
             const lr = m.block.querySelector(`.member-lunch-field[value="${member.existing.buffet}"]`);
             if (lr) lr.checked = true;
           }
+          const bachChoice = member.existing.bachEvent;
+          if (bachChoice) {
+            const br = m.block.querySelector(`.member-bach-field[value="${bachChoice}"]`);
+            if (br) br.checked = true;
+          }
           m.declineNoteField.value = member.existing.declineNote || "";
           if (member.existing.attending) {
             const attending = member.existing.attending === "Yes";
+            const bachShown = attending && !!match.bachEventAllowed;
             const radio = m.block.querySelector(`.member-attending-radio[value="${member.existing.attending}"]`);
             if (radio) radio.checked = true;
             show(m.dietaryWrap, attending);
+            show(m.bachWrap, bachShown);
             show(m.lunchWrap, attending);
             show(m.declineNoteWrap, member.existing.attending === "No");
             m.lunchRadios.forEach((lr) => { lr.required = attending; });
+            m.bachRadios.forEach((br) => { br.required = bachShown; });
           }
         }
       });
@@ -283,6 +318,7 @@
       show(plusOneField, !!match.plusOneAllowed);
       plusOneCheckbox.checked = false;
       show(plusOneDetails, false);
+      show(plusOneBachField, !!match.bachEventAllowed);
       show(childrenField, !!match.childrenAllowed);
 
       // Reset every party-level field, then re-fill from what's on record —
@@ -291,6 +327,7 @@
       plusOneNameInput.value = "";
       plusOneDietaryInput.value = "";
       setPlusOneLunch("");
+      setPlusOneBach("");
       childrenInput.value = "";
       songRequestsInput.value = "";
       notesInput.value = "";
@@ -302,6 +339,7 @@
           plusOneNameInput.value = shared.plusOneName || "";
           plusOneDietaryInput.value = shared.plusOneDietary || "";
           setPlusOneLunch(shared.plusOneLunch === "No" ? "No" : shared.plusOneLunch === "Yes" ? "Yes" : "");
+          if (match.bachEventAllowed) setPlusOneBach(shared.plusOneBachEvent || "");
           show(plusOneDetails, plusOneCheckbox.checked);
         }
         if (match.childrenAllowed) {
@@ -510,6 +548,8 @@
           const dietary = data.get(`member${i}_dietary`);
           if (dietary) add(`${D("rsvp.js.sum.dietary")} ${dietary}`, true);
           if (data.get(`member${i}_buffet`) === "Yes") add(D("rsvp.js.sum.lunch"), true);
+          const bachKey = BACH_LABEL_KEYS[data.get(`member${i}_bachEvent`)];
+          if (bachKey) add(`${D("rsvp.js.sum.bach")} ${D(bachKey)}`, true);
         }
         i++;
       }
@@ -519,6 +559,8 @@
         const dietary = data.get("plusOneDietary");
         if (dietary) add(`${D("rsvp.js.sum.dietary")} ${dietary}`, true);
         if (data.get("plusOneLunch") === "Yes") add(D("rsvp.js.sum.lunch"), true);
+        const plusOneBachKey = BACH_LABEL_KEYS[data.get("plusOneBachEvent")];
+        if (plusOneBachKey) add(`${D("rsvp.js.sum.bach")} ${D(plusOneBachKey)}`, true);
       }
       if (data.get("children")) add(`${D("rsvp.js.sum.children")} ${data.get("children")}`);
       if (data.get("songRequests")) add(`${D("rsvp.js.sum.songs")} ${data.get("songRequests")}`);

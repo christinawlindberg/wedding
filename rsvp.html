@@ -130,6 +130,19 @@
                 <input type="text" class="member-dietary-field" placeholder="e.g. nut allergy, gluten-free, vegan" data-i18n-ph="rsvp.diet.ph">
               </div>
 
+              <!-- Only shown for parties whose GuestList row has
+                   BachEventAllowed set (see buildPartyResult in Code.gs) —
+                   the Friday events are invite-only. -->
+              <div class="field member-bach-wrap" hidden>
+                <span class="field-label member-bach-label" data-i18n="rsvp.m.bach">Bachelor &amp; Bachelorette Events</span>
+                <p class="field-hint" data-i18n="rsvp.m.bach.hint">We also invite you to join us for our Bachelor and Bachelorette events, which will occur on Bornholm on Friday afternoon, September 3rd, 2027. Weather permitting, John will lead a 10 km bike ride to the Mikkeller microbrewery in &Aring;rsdale, while Christina will host a beachside picnic and crafts in Snogeb&aelig;k. Plus ones are welcome to attend either event.</p>
+                <div class="radio-row radio-stack member-bach-radios" role="group">
+                  <label><input type="radio" class="member-bach-field" value="Bike ride"> <span data-i18n="rsvp.bach.bike">Bike trip with John</span></label>
+                  <label><input type="radio" class="member-bach-field" value="Picnic"> <span data-i18n="rsvp.bach.picnic">Beach picnic with Christina</span></label>
+                  <label><input type="radio" class="member-bach-field" value="Opt out"> <span data-i18n="rsvp.bach.optout">Opt Out</span></label>
+                </div>
+              </div>
+
               <div class="field member-lunch-wrap" hidden>
                 <span class="field-label member-lunch-label" data-i18n="rsvp.m.lunch">Interested in the Sunday Fish Buffet Lunch?</span>
                 <div class="radio-row member-lunch-radios" role="group">
@@ -158,6 +171,17 @@
                   <label for="plusOneDietary" data-i18n="rsvp.po.diet">Plus-one's dietary restrictions / preferences</label>
                   <input type="text" id="plusOneDietary" name="plusOneDietary" placeholder="e.g. nut allergy, gluten-free, vegan" data-i18n-ph="rsvp.diet.ph">
                 </div>
+                <!-- Shown with the member blocks' bach question, on the same
+                     BachEventAllowed flag — plus-ones may join either event. -->
+                <div class="field" id="plusOneBachField" hidden>
+                  <span class="field-label" data-i18n="rsvp.po.bach">Plus-one's Bachelor &amp; Bachelorette event</span>
+                  <div class="radio-row radio-stack" role="group" aria-label="Plus-one's Bachelor and Bachelorette event" data-i18n-al="rsvp.po.bach.al">
+                    <label><input type="radio" name="plusOneBachEvent" value="Bike ride"> <span data-i18n="rsvp.bach.bike">Bike trip with John</span></label>
+                    <label><input type="radio" name="plusOneBachEvent" value="Picnic"> <span data-i18n="rsvp.bach.picnic">Beach picnic with Christina</span></label>
+                    <label><input type="radio" name="plusOneBachEvent" value="Opt out"> <span data-i18n="rsvp.bach.optout">Opt Out</span></label>
+                  </div>
+                </div>
+
                 <div class="field">
                   <span class="field-label" data-i18n="rsvp.po.lunch">Plus-one interested in the Sunday Fish Buffet Lunch?</span>
                   <div class="radio-row" role="group" aria-label="Plus-one interested in the Sunday Fish Buffet Lunch" data-i18n-al="rsvp.po.lunch.al">

@@ -82,7 +82,7 @@ maintain by hand, and a responses tab the script fills in automatically.
 
    **`GuestList`** — one row per person you've invited. You fill this in
    yourself before sending invitations. Header row:
-   `PartyID | Name | PlusOneAllowed | ChildrenAllowed`
+   `PartyID | Name | PlusOneAllowed | ChildrenAllowed | BachEventAllowed`
 
    `GuestList-example.csv` in this folder has example rows covering every
    case (solo guest, solo guest with a plus-one, solo guest allowed
@@ -113,16 +113,30 @@ maintain by hand, and a responses tab the script fills in automatically.
      (`John Smith & Jane Smith`, or `John & Jane Smith` if they share a
      last name; larger groups are matched by individual name only, not a
      combined form).
-   - `PlusOneAllowed` / `ChildrenAllowed`: TRUE or FALSE (checkbox columns
-     work well). Only guests marked TRUE will see that option — most people
-     should be FALSE/FALSE if their invite is just for themselves (and any
-     children/plus-ones are already implied, not optional). For a shared
-     invitation, set these on any one row — any TRUE is enough; they're
-     shared across the whole party, not per-person.
+   - `PlusOneAllowed` / `ChildrenAllowed` / `BachEventAllowed`: TRUE or
+     FALSE (checkbox columns work well). Only guests marked TRUE will see
+     that option — most people should be FALSE/FALSE if their invite is just
+     for themselves (and any children/plus-ones are already implied, not
+     optional). For a shared invitation, set these on any one row — any TRUE
+     is enough; they're shared across the whole party, not per-person.
+   - `BachEventAllowed` specifically gates the Friday bachelor/bachelorette
+     question, which is invite-only: guests marked TRUE are asked to pick
+     between the bike ride, the beach picnic, or opting out (their plus-one
+     gets their own pick). Everyone else never sees the question at all.
 
    **`RSVPs`** — where submitted responses land. You don't need to add rows
    here, just create the tab with the header row:
-   `PartyID | PartyKey | Name | Email | Attending | Dietary | Buffet | DeclineNote | PlusOne | PlusOneName | PlusOneDietary | PlusOneLunch | Children | SongRequests | Notes | Timestamp | FirstResponded | SubmissionID`
+   `PartyID | PartyKey | Name | Email | Attending | Dietary | Buffet | BachEvent | DeclineNote | PlusOne | PlusOneName | PlusOneDietary | PlusOneLunch | PlusOneBachEvent | Children | SongRequests | Notes | Timestamp | FirstResponded | SubmissionID`
+
+   Columns are matched by header **name**, not position, so the order above
+   doesn't matter and adding one later just means appending it to the right
+   of the existing headers. A column the script writes but the sheet doesn't
+   have is skipped silently, so a missing header shows up as quietly absent
+   data rather than an error — worth double-checking after adding one.
+   - `BachEvent` / `PlusOneBachEvent` — which Friday event that person
+     picked: `Bike ride`, `Picnic`, or `Opt out`. Blank means they weren't
+     invited to it (`BachEventAllowed` wasn't TRUE), which is deliberately
+     distinct from an explicit `Opt out`.
 
    The last few are bookkeeping columns you can ignore when reading the
    sheet — but they do need to exist, since the script matches columns by

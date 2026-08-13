@@ -514,10 +514,13 @@ function stickerAttachment() {
 // pinstriped border framing a ruled panel. Everything is inlined and
 // table-based because that's the subset of HTML/CSS email clients agree
 // on — see buildConfirmationHtml for what degrades where.
-const MAIL_PAGE_BG = "#e9e7e0";   // outside the card
-const MAIL_CARD_BG = "#f4f2eb";   // the card stock itself
-const MAIL_INK = "#2f3d34";       // deep green, headings + rules
-const MAIL_BODY_INK = "#4a5a4f";  // slightly lifted, for body copy
+// Warm palette pulled from the sticker's ginger coat: light golden stock,
+// burnt-orange rules and headings, soft brown body copy. Kept dark enough
+// to stay legible — a literal orange on cream fails contrast at body size.
+const MAIL_PAGE_BG = "#f6e7cd";   // outside the card, warm sand
+const MAIL_CARD_BG = "#fffaf1";   // the card stock itself
+const MAIL_INK = "#b26424";       // burnt orange, headings + rules
+const MAIL_BODY_INK = "#6d5236";  // warm brown, for body copy
 const MAIL_SERIF = "Georgia, 'Times New Roman', Times, serif";
 
 // The response is grouped rather than kept as flat lines so the plain-text
@@ -531,9 +534,10 @@ function buildResponseSections(members, shared) {
     items.push(m.attending === "Yes" ? "Attending" : "Not attending");
     if (m.attending === "Yes") {
       if (m.dietary) items.push("Dietary: " + m.dietary);
-      if (m.buffet === "Yes") items.push("Coming to the Sunday lunch");
+      // Friday before Sunday — the weekend in order.
       const bach = bachEventLabel(m.bachEvent);
       if (bach) items.push("Friday event: " + bach);
+      if (m.buffet === "Yes") items.push("Coming to the Sunday lunch");
     }
     sections.push({ title: m.name, items: items });
   });
@@ -541,9 +545,9 @@ function buildResponseSections(members, shared) {
   if (shared.PlusOne === "Yes") {
     const items = [shared.PlusOneName || "(name to come)"];
     if (shared.PlusOneDietary) items.push("Dietary: " + shared.PlusOneDietary);
-    if (shared.PlusOneLunch === "Yes") items.push("Coming to the Sunday lunch");
     const plusOneBach = bachEventLabel(shared.PlusOneBachEvent);
     if (plusOneBach) items.push("Friday event: " + plusOneBach);
+    if (shared.PlusOneLunch === "Yes") items.push("Coming to the Sunday lunch");
     sections.push({ title: "Plus-one", items: items });
   }
 
@@ -590,7 +594,7 @@ function buildConfirmationHtml(greeting, intro, sections, contact, signoff, hasS
   }).join("");
 
   const stickerHtml = hasSticker
-    ? '<div style="margin:0 0 30px;"><img src="cid:catSticker" alt="" width="190" ' +
+    ? '<div style="margin:30px 0 0;"><img src="cid:catSticker" alt="" width="190" ' +
       'style="width:190px;max-width:70%;height:auto;border:0;display:block;margin:0 auto;"></div>'
     : "";
 
@@ -618,10 +622,8 @@ function buildConfirmationHtml(greeting, intro, sections, contact, signoff, hasS
 
           '<div style="font-family:' + MAIL_SERIF + ';font-size:27px;letter-spacing:7px;' +
           "text-transform:uppercase;color:" + MAIL_INK + ';">RSVP</div>' +
-          '<div style="margin:2px 0 26px;font-family:' + MAIL_SERIF + ';font-style:italic;' +
+          '<div style="margin:2px 0 30px;font-family:' + MAIL_SERIF + ';font-style:italic;' +
           "font-size:40px;line-height:1.2;color:" + MAIL_INK + ';">Confirmed</div>' +
-
-          stickerHtml +
 
           '<div style="margin:0 0 30px;font-family:' + MAIL_SERIF + ';font-size:15px;' +
           "line-height:1.7;color:" + MAIL_BODY_INK + ';">' +
@@ -637,6 +639,8 @@ function buildConfirmationHtml(greeting, intro, sections, contact, signoff, hasS
           '<div style="margin-top:24px;font-family:' + MAIL_SERIF + ';font-size:15px;' +
           "line-height:1.7;color:" + MAIL_INK + ';">Thank you,<br>' +
           '<span style="font-style:italic;font-size:20px;">' + escapeHtml(signoff) + "</span></div>" +
+
+          stickerHtml +
 
         "</td></tr></table>" +
       "</td></tr></table>" +

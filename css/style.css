@@ -223,6 +223,10 @@ label, .field-label {
 }
 .choice-label input[type="checkbox"], .radio-row input[type="radio"] { margin-top: 0.35rem; flex: none; }
 .field-hint { font-size: 0.8rem; color: var(--muted); margin: 0.4rem 0 0; }
+/* A hint that introduces the options below it (rather than trailing them)
+   needs room underneath, or the blurb and the first choice read as one
+   run-on block. */
+.field-hint + .radio-row { margin-top: 1rem; }
 .nested-fields { margin-top: 0.75rem; margin-left: 1.75rem; padding-left: 1rem; border-left: 2px solid var(--hairline); }
 .nested-fields .field:last-child { margin-bottom: 0; }
 

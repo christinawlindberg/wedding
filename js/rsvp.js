@@ -110,6 +110,22 @@
     const summaryList = document.getElementById("summary-list");
     const summaryEmail = document.getElementById("summary-email");
 
+    // The Friday-event and Sunday-buffet blurbs explain the event itself, so
+    // a couple or family shouldn't read the same paragraph once per name.
+    // Each is shown on the first block currently *showing* that question —
+    // "first" rather than "first visible" would strand the blurb whenever
+    // the first person declines and a later one accepts.
+    function refreshGroupHints(blocks) {
+      [["bachWrap", "bachHint"], ["lunchWrap", "lunchHint"]].forEach(([wrapKey, hintKey]) => {
+        let shown = false;
+        blocks.forEach((b) => {
+          const asking = b[wrapKey] && !b[wrapKey].hidden;
+          show(b[hintKey], asking && !shown);
+          if (asking) shown = true;
+        });
+      });
+    }
+
     // Builds one member block per party member (index is 1-based to match
     // the memberN_* field naming Code.gs's doPost expects), wiring up
     // name="..." attributes since these fields aren't in the static HTML,
@@ -138,6 +154,10 @@
         const bachLabel = fragment.querySelector(".member-bach-label");
         const bachGroup = fragment.querySelector(".member-bach-radios");
         const bachWrap = fragment.querySelector(".member-bach-wrap");
+        // The blurbs describe the event, not the person, so they're shown
+        // once per party rather than under every name (see refreshGroupHints).
+        const bachHint = bachWrap.querySelector(".field-hint");
+        const lunchHint = lunchWrap.querySelector(".field-hint");
         const declineNoteField = fragment.querySelector(".member-decline-note-field");
         const declineNoteWrap = fragment.querySelector(".member-decline-note-wrap");
         const declineNoteLabel = fragment.querySelector(".member-decline-note-label");
@@ -195,6 +215,10 @@
             show(declineNoteWrap, declining);
             lunchRadios.forEach((lr) => { lr.required = attending; });
             bachRadios.forEach((br) => { br.required = bachShown; });
+            // Whose block carries each blurb depends on who's still being
+            // asked, so it's recomputed across the whole party after any
+            // attendance change — not just for this member.
+            refreshGroupHints(blocks);
           });
         });
 
@@ -203,7 +227,7 @@
         // now so it matches the current language (it's also re-translated on
         // toggle, since it's now part of the document).
         if (window.i18n) window.i18n.translate(block);
-        blocks.push({ block, heading, nameField, emailField, dietaryField, dietaryWrap, lunchRadios, lunchWrap, bachRadios, bachWrap, declineNoteField, declineNoteWrap });
+        blocks.push({ block, heading, nameField, emailField, dietaryField, dietaryWrap, lunchRadios, lunchWrap, lunchHint, bachRadios, bachWrap, bachHint, declineNoteField, declineNoteWrap });
       });
 
       return blocks;
@@ -314,6 +338,7 @@
           }
         }
       });
+      refreshGroupHints(memberBlocks);
 
       show(plusOneField, !!match.plusOneAllowed);
       plusOneCheckbox.checked = false;

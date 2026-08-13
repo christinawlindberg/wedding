@@ -509,6 +509,140 @@ function stickerAttachment() {
   }
 }
 
+// ---- confirmation email styling ----
+// Loosely a printed dinner-menu card: cream stock, deep green ink, a
+// pinstriped border framing a ruled panel. Everything is inlined and
+// table-based because that's the subset of HTML/CSS email clients agree
+// on — see buildConfirmationHtml for what degrades where.
+const MAIL_PAGE_BG = "#e9e7e0";   // outside the card
+const MAIL_CARD_BG = "#f4f2eb";   // the card stock itself
+const MAIL_INK = "#2f3d34";       // deep green, headings + rules
+const MAIL_BODY_INK = "#4a5a4f";  // slightly lifted, for body copy
+const MAIL_SERIF = "Georgia, 'Times New Roman', Times, serif";
+
+// The response is grouped rather than kept as flat lines so the plain-text
+// and HTML parts can both be rendered from one model and never drift: each
+// section is a heading (a person, or "Notes") plus the lines under it.
+function buildResponseSections(members, shared) {
+  const sections = [];
+
+  members.forEach(function (m) {
+    const items = [];
+    items.push(m.attending === "Yes" ? "Attending" : "Not attending");
+    if (m.attending === "Yes") {
+      if (m.dietary) items.push("Dietary: " + m.dietary);
+      if (m.buffet === "Yes") items.push("Coming to the Sunday lunch");
+      const bach = bachEventLabel(m.bachEvent);
+      if (bach) items.push("Friday event: " + bach);
+    }
+    sections.push({ title: m.name, items: items });
+  });
+
+  if (shared.PlusOne === "Yes") {
+    const items = [shared.PlusOneName || "(name to come)"];
+    if (shared.PlusOneDietary) items.push("Dietary: " + shared.PlusOneDietary);
+    if (shared.PlusOneLunch === "Yes") items.push("Coming to the Sunday lunch");
+    const plusOneBach = bachEventLabel(shared.PlusOneBachEvent);
+    if (plusOneBach) items.push("Friday event: " + plusOneBach);
+    sections.push({ title: "Plus-one", items: items });
+  }
+
+  if (shared.Children) sections.push({ title: "Children", items: [shared.Children] });
+  if (shared.SongRequests) sections.push({ title: "Song Requests", items: [shared.SongRequests] });
+  if (shared.Notes) sections.push({ title: "Notes", items: [shared.Notes] });
+
+  return sections;
+}
+
+function renderSectionsText(sections) {
+  return sections.map(function (s) {
+    return s.title + "\n" + s.items.map(function (i) { return "    " + i; }).join("\n");
+  }).join("\n\n");
+}
+
+// Builds the card. Notes on the email-client compromises:
+//  - tables + inline styles, since Outlook ignores most modern CSS
+//  - the pinstripes are a repeating-linear-gradient, which unsupported
+//    clients simply drop, leaving the plain cream bgcolor underneath
+//  - no web fonts (they don't load in Outlook/Gmail); the script accent on
+//    a real menu becomes large italic Georgia, which is the closest thing
+//    that renders everywhere
+function buildConfirmationHtml(greeting, intro, sections, contact, signoff, hasSticker) {
+  const stripes =
+    "background-image:repeating-linear-gradient(90deg," + MAIL_INK + " 0px," + MAIL_INK +
+    " 1px,transparent 1px,transparent 7px);";
+
+  // Guest-entered text and the site URL below are both long unbroken
+  // strings in the worst case; without this they widen the card past the
+  // screen on a phone instead of wrapping.
+  const wrap = "word-break:break-word;overflow-wrap:break-word;";
+
+  const sectionsHtml = sections.map(function (s) {
+    const items = s.items.map(function (item) {
+      return '<div style="margin:0 0 4px;font-family:' + MAIL_SERIF +
+        ';font-size:15px;line-height:1.65;color:' + MAIL_BODY_INK + ";" + wrap + '">' +
+        escapeHtml(item) + "</div>";
+    }).join("");
+    return '<div style="margin:0 0 26px;">' +
+      '<div style="margin:0 0 8px;font-family:' + MAIL_SERIF +
+      ';font-style:italic;font-size:22px;line-height:1.3;color:' + MAIL_INK + ';">' +
+      escapeHtml(s.title) + "</div>" + items + "</div>";
+  }).join("");
+
+  const stickerHtml = hasSticker
+    ? '<div style="margin:0 0 30px;"><img src="cid:catSticker" alt="" width="190" ' +
+      'style="width:190px;max-width:70%;height:auto;border:0;display:block;margin:0 auto;"></div>'
+    : "";
+
+  return '<!DOCTYPE html><html><head><meta charset="utf-8">' +
+    '<meta name="viewport" content="width=device-width,initial-scale=1">' +
+    "<title>RSVP confirmed</title></head>" +
+    '<body style="margin:0;padding:0;background:' + MAIL_PAGE_BG + ';">' +
+    '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" ' +
+    'bgcolor="' + MAIL_PAGE_BG + '" style="background:' + MAIL_PAGE_BG + ';">' +
+    '<tr><td align="center" style="padding:28px 12px;">' +
+
+      // The card, with the pinstriped margin. width:100% + max-width (rather
+      // than a fixed width:600px) is what lets it shrink on a phone — a
+      // fixed-width table won't drop below its content's min-width and just
+      // overflows the screen instead.
+      '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" ' +
+      'align="center" bgcolor="' + MAIL_CARD_BG + '" style="width:100%;max-width:600px;background:' +
+      MAIL_CARD_BG + ';">' +
+      '<tr><td style="padding:22px;' + stripes + '">' +
+
+        // The ruled inner panel sits on solid stock, masking the stripes.
+        '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" ' +
+        'bgcolor="' + MAIL_CARD_BG + '" style="background:' + MAIL_CARD_BG + ';border:1px solid ' + MAIL_INK + ';">' +
+        '<tr><td align="center" style="padding:40px 34px 44px;">' +
+
+          '<div style="font-family:' + MAIL_SERIF + ';font-size:27px;letter-spacing:7px;' +
+          "text-transform:uppercase;color:" + MAIL_INK + ';">RSVP</div>' +
+          '<div style="margin:2px 0 26px;font-family:' + MAIL_SERIF + ';font-style:italic;' +
+          "font-size:40px;line-height:1.2;color:" + MAIL_INK + ';">Confirmed</div>' +
+
+          stickerHtml +
+
+          '<div style="margin:0 0 30px;font-family:' + MAIL_SERIF + ';font-size:15px;' +
+          "line-height:1.7;color:" + MAIL_BODY_INK + ';">' +
+          "<div>" + escapeHtml(greeting) + "</div>" +
+          '<div style="margin-top:10px;">' + escapeHtml(intro) + "</div></div>" +
+
+          sectionsHtml +
+
+          '<div style="border-top:1px solid ' + MAIL_INK + ';margin:6px 0 0;padding-top:22px;' +
+          "font-family:" + MAIL_SERIF + ";font-size:12.5px;line-height:1.7;color:" + MAIL_BODY_INK + ";" +
+          wrap + '">' + escapeHtml(contact) + "</div>" +
+
+          '<div style="margin-top:24px;font-family:' + MAIL_SERIF + ';font-size:15px;' +
+          "line-height:1.7;color:" + MAIL_INK + ';">Thank you,<br>' +
+          '<span style="font-style:italic;font-size:20px;">' + escapeHtml(signoff) + "</span></div>" +
+
+        "</td></tr></table>" +
+      "</td></tr></table>" +
+    "</td></tr></table></body></html>";
+}
+
 // Guests get no receipt otherwise — they submit into a void and then email
 // to ask whether it worked. Failures here are swallowed on purpose: the
 // RSVP is already saved, and a mail quota problem shouldn't look like a
@@ -526,27 +660,7 @@ function sendConfirmation(members, shared) {
   if (!to) return;
 
   try {
-    const responseLines = [];
-    members.forEach((m) => {
-      responseLines.push(m.attending === "Yes" ? m.name + " — attending" : m.name + " — not attending");
-      if (m.attending === "Yes") {
-        if (m.dietary) responseLines.push("    Dietary: " + m.dietary);
-        if (m.buffet === "Yes") responseLines.push("    Coming to the Sunday lunch");
-        const bach = bachEventLabel(m.bachEvent);
-        if (bach) responseLines.push("    Friday event: " + bach);
-      }
-    });
-    if (shared.PlusOne === "Yes") {
-      responseLines.push("Plus-one: " + (shared.PlusOneName || "(name to come)"));
-      if (shared.PlusOneDietary) responseLines.push("    Dietary: " + shared.PlusOneDietary);
-      if (shared.PlusOneLunch === "Yes") responseLines.push("    Coming to the Sunday lunch");
-      const plusOneBach = bachEventLabel(shared.PlusOneBachEvent);
-      if (plusOneBach) responseLines.push("    Friday event: " + plusOneBach);
-    }
-    if (shared.Children) responseLines.push("Children: " + shared.Children);
-    if (shared.SongRequests) responseLines.push("Song requests: " + shared.SongRequests);
-    if (shared.Notes) responseLines.push("Notes: " + shared.Notes);
-
+    const sections = buildResponseSections(members, shared);
     const anyAttending = members.some((m) => m.attending === "Yes");
 
     let intro;
@@ -563,40 +677,15 @@ function sendConfirmation(members, shared) {
     const signoff = "Christina Lindberg & John Soltis";
 
     // Plain-text part. Still sent alongside the HTML below, both because
-    // some clients prefer it and because it's what any future text-only
-    // reader falls back to.
+    // some clients prefer it and because it's what any text-only reader
+    // falls back to. Rendered from the same sections as the HTML.
     const body = [
-      greeting, "", intro, "", responseLines.join("\n"), "",
+      greeting, "", intro, "", renderSectionsText(sections), "",
       contact, "", "Thank you,", signoff,
     ].join("\n");
 
-    // HTML part — same content, plus the sticker. responseLines is already
-    // formatted for text, so it's reused here: a line indented by four
-    // spaces is a sub-item (dietary, buffet, Friday event) and gets rendered
-    // as one, everything else is a person/heading line.
-    const responseHtml = responseLines.map(function (line) {
-      const isSubItem = line.indexOf("    ") === 0;
-      const text = escapeHtml(isSubItem ? line.slice(4) : line);
-      return isSubItem
-        ? '<div style="margin:0 0 2px 22px;color:#555555;">' + text + "</div>"
-        : '<div style="margin:10px 0 2px;font-weight:600;">' + text + "</div>";
-    }).join("");
-
     const sticker = stickerAttachment();
-    const stickerHtml = sticker
-      ? '<img src="cid:catSticker" alt="" width="200" style="width:200px;max-width:60%;height:auto;margin-top:22px;border:0;">'
-      : "";
-
-    const htmlBody =
-      '<div style="font-family:-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,Helvetica,Arial,sans-serif;' +
-      'font-size:15px;line-height:1.6;color:#232323;max-width:600px;">' +
-        "<p>" + escapeHtml(greeting) + "</p>" +
-        "<p>" + escapeHtml(intro) + "</p>" +
-        '<div style="margin:18px 0;">' + responseHtml + "</div>" +
-        "<p>" + escapeHtml(contact) + "</p>" +
-        "<p>Thank you,<br>" + escapeHtml(signoff) + "</p>" +
-        stickerHtml +
-      "</div>";
+    const htmlBody = buildConfirmationHtml(greeting, intro, sections, contact, signoff, !!sticker);
 
     const message = {
       to: to,

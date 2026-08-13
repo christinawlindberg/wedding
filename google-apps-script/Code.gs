@@ -71,6 +71,13 @@ const SITE_URL = "https://christinawlindberg.github.io/wedding/";
 // hand with whatever password's hash is in js/config.js as PASSWORD_HASH.
 const RSVP_PASSWORD = "oliver2027";
 
+// Sticker shown at the bottom of the confirmation email. Fetched from the
+// live site at send time and attached inline, so it displays without the
+// "load remote images?" prompt some clients show. Set to "" to drop it.
+// If the fetch fails the email still goes out, just without the picture —
+// see stickerAttachment().
+const CONFIRMATION_STICKER_URL = SITE_URL + "assets/images/cat-sticker.png";
+
 // "auto" picks the confirmation wording based on whether anyone in the
 // party is attending (see sendConfirmation). Set to "neutral" to always
 // send the same wording regardless of attendance.
@@ -472,6 +479,36 @@ function bachEventLabel(value) {
   }
 }
 
+// The email carries guest-entered text (names, dietary needs, notes), so
+// anything interpolated into the HTML part gets escaped — otherwise a stray
+// "<" or "&" in someone's note mangles the rest of the message.
+function escapeHtml(value) {
+  return String(value == null ? "" : value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+// Grabs the sticker for inline (cid:) embedding. Deliberately isolated and
+// non-fatal: a slow or 404-ing image must never cost a guest their
+// confirmation email, so any failure just returns null and the message goes
+// out without the picture.
+function stickerAttachment() {
+  if (!CONFIRMATION_STICKER_URL) return null;
+  try {
+    const response = UrlFetchApp.fetch(CONFIRMATION_STICKER_URL, { muteHttpExceptions: true });
+    if (response.getResponseCode() !== 200) {
+      console.error("Sticker fetch returned HTTP " + response.getResponseCode());
+      return null;
+    }
+    return response.getBlob().setName("catSticker");
+  } catch (err) {
+    console.error("Sticker fetch failed: " + err);
+    return null;
+  }
+}
+
 // Guests get no receipt otherwise — they submit into a void and then email
 // to ask whether it worked. Failures here are swallowed on purpose: the
 // RSVP is already saved, and a mail quota problem shouldn't look like a
@@ -521,24 +558,55 @@ function sendConfirmation(members, shared) {
       intro = "Thank you for responding to our RSVP invitation. We are sorry that you are unable to attend, but we appreciate your reply. Below is a copy of your responses.";
     }
 
+    const greeting = "Dear " + joinNames(members.map((m) => m.name)) + ",";
+    const contact = "Please contact us if there are any errors, or if you have any questions or concerns. John can be reached at jsoltisd@gmail.com or +1 (248) 996-7989. Christina can be contacted at christina.lindberg@live.com or +1 (425) 273-3517. You can also update your RSVP on the website at any time using the link from the RSVP invitation, or by entering the url " + SITE_URL + "index.html and searching your name. If you use the above url, you will need to enter a password to modify the RSVP. The password to the website is " + RSVP_PASSWORD + ".";
+    const signoff = "Christina Lindberg & John Soltis";
+
+    // Plain-text part. Still sent alongside the HTML below, both because
+    // some clients prefer it and because it's what any future text-only
+    // reader falls back to.
     const body = [
-      "Dear " + joinNames(members.map((m) => m.name)) + ",",
-      "",
-      intro,
-      "",
-      responseLines.join("\n"),
-      "",
-      "Please contact us if there are any errors, or if you have any questions or concerns. John can be reached at jsoltisd@gmail.com or +1 (248) 996-7989. Christina can be contacted at christina.lindberg@live.com or +1 (425) 273-3517. You can also update your RSVP on the website at any time using the link from the RSVP invitation, or by entering the url " + SITE_URL + "index.html and searching your name. If you use the above url, you will need to enter a password to modify the RSVP. The password to the website is " + RSVP_PASSWORD + ".",
-      "",
-      "Thank you,",
-      "Christina Lindberg & John Soltis",
+      greeting, "", intro, "", responseLines.join("\n"), "",
+      contact, "", "Thank you,", signoff,
     ].join("\n");
 
-    MailApp.sendEmail({
+    // HTML part — same content, plus the sticker. responseLines is already
+    // formatted for text, so it's reused here: a line indented by four
+    // spaces is a sub-item (dietary, buffet, Friday event) and gets rendered
+    // as one, everything else is a person/heading line.
+    const responseHtml = responseLines.map(function (line) {
+      const isSubItem = line.indexOf("    ") === 0;
+      const text = escapeHtml(isSubItem ? line.slice(4) : line);
+      return isSubItem
+        ? '<div style="margin:0 0 2px 22px;color:#555555;">' + text + "</div>"
+        : '<div style="margin:10px 0 2px;font-weight:600;">' + text + "</div>";
+    }).join("");
+
+    const sticker = stickerAttachment();
+    const stickerHtml = sticker
+      ? '<img src="cid:catSticker" alt="" width="200" style="width:200px;max-width:60%;height:auto;margin-top:22px;border:0;">'
+      : "";
+
+    const htmlBody =
+      '<div style="font-family:-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,Helvetica,Arial,sans-serif;' +
+      'font-size:15px;line-height:1.6;color:#232323;max-width:600px;">' +
+        "<p>" + escapeHtml(greeting) + "</p>" +
+        "<p>" + escapeHtml(intro) + "</p>" +
+        '<div style="margin:18px 0;">' + responseHtml + "</div>" +
+        "<p>" + escapeHtml(contact) + "</p>" +
+        "<p>Thank you,<br>" + escapeHtml(signoff) + "</p>" +
+        stickerHtml +
+      "</div>";
+
+    const message = {
       to: to,
       subject: "We've got your RSVP — " + COUPLE_NAMES,
       body: body,
-    });
+      htmlBody: htmlBody,
+    };
+    if (sticker) message.inlineImages = { catSticker: sticker };
+
+    MailApp.sendEmail(message);
   } catch (err) {
     console.error("Confirmation email failed: " + err);
   }

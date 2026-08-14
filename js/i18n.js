@@ -26,7 +26,7 @@ window.I18N_DA = {
   // ---- home ----
   "home.kicker": "Brylluppet mellem",
   "home.date": "4. september 2027 &middot; Snogeb&aelig;k, Bornholm",
-  "home.story": "John og Christina m&oslash;dte hinanden i 2019 p&aring; Johns Hopkins i Baltimore. De var begge indskrevet p&aring; Johns Hopkins&rsquo; ph.d.-program i astronomi og astrofysik. Gennem forel&aelig;sninger, f&aelig;lles l&aelig;segrupper og ugentlige fredagsbarer blev de f&oslash;rst venner og forelskede sig derefter hurtigt i hinanden. P&aring; trods af en pandemi, praktikophold, rejser og det berygtede akademiske to-legeme-problem er Christina og John kun kommet t&aelig;ttere p&aring; hinanden. De ser ceremonien og festen som en anledning til at fejre en milep&aelig;l i deres forhold sammen med deres n&aelig;rmeste venner og familie.",
+  "home.story": "John og Christina m&oslash;dte hinanden i 2019 p&aring; Johns Hopkins i Baltimore. De var begge indskrevet p&aring; Johns Hopkins&rsquo; ph.d.-program i astronomi og astrofysik. Gennem forel&aelig;sninger, f&aelig;lles l&aelig;segrupper og ugentlige fredagsbarer blev de f&oslash;rst venner og forelskede sig derefter hurtigt i hinanden. P&aring; trods af en pandemi, praktikophold, rejser og det berygtede akademiske <a href=\"https://en.wikipedia.org/wiki/Two-body_problem_(career)\" target=\"_blank\" rel=\"noopener\">to-legeme-problem</a> er Christina og John kun kommet t&aelig;ttere p&aring; hinanden. De ser ceremonien og festen som en anledning til at fejre en milep&aelig;l i deres forhold sammen med deres n&aelig;rmeste venner og familie.",
 
   // ---- schedule ----
   "sched.fri": "Fredag den 3. september 2027",

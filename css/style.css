@@ -136,6 +136,11 @@ p { margin: 0.9rem 0; }
 .home .hr-mark { background: #fff; opacity: 0.8; }
 .home .section { padding-top: 0; padding-bottom: 4rem; }
 .home .lede { margin-top: 0; }
+/* The story sits on the photo, where the accent blue goes muddy and barely
+   reads. Keep links white like the surrounding copy and let the underline
+   carry the affordance. */
+.home .lede a { color: #fff; text-decoration: underline; text-decoration-thickness: 1px; }
+.home .lede a:hover { text-decoration-thickness: 2px; }
 .home-couple { margin: 2.5rem auto; max-width: 340px; }
 .home-couple img {
   display: block; width: 100%; border-radius: 12px;

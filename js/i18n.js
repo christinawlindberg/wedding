@@ -47,6 +47,12 @@ window.I18N_DA = {
   "sched.e4.title": "Frokostbuffet med fisk og skaldyr",
   "sched.e4.time": "12.00",
   "sched.e4.desc": "En afslappet afskedsfrokost p&aring; r&oslash;geriet ved havnen, f&oslash;r alle drager hjem.",
+  "sched.attire.examples": "(Eksempler)",
+  // These two land in attributes (aria-label) rather than in element text,
+  // where HTML entities would show up literally — so they're written with
+  // real characters instead of the &oslash;-style escapes used elsewhere.
+  "sched.attire.examples.alt": "Billeder af gæster i semiformelt tøj",
+  "lightbox.close": "Luk",
   "btn.map": "Kort",
   "btn.cal": "F&oslash;j til kalender",
 

@@ -50,7 +50,7 @@
           <p class="event-title" data-i18n="sched.e3.title">Dinner, Cake &amp; Party</p>
           <p class="event-time" data-i18n="sched.e3.time">Evening - 5:00 PM</p>
         </div>
-        <div class="event-right"><p class="event-venue">Folkets Hus</p><p class="event-addr"><a href="https://www.google.com/maps/search/?api=1&query=Folkets%20Hus%2C%20Hovedgade%2012%2C%203730%20Snogeb%C3%A6k%2C%20Denmark" target="_blank" rel="noopener">Hovedgade 12, 3730 Snogebæk</a></p><p class="event-attire" data-i18n="sched.e3.attire">Attire: Semi-formal · danceability first</p><p class="event-desc" data-i18n="sched.e3.desc">Dinner, speeches, cake, and dancing well into the evening. Reinforcements at midnight.</p><div class="event-btns"><a class="btn" href="https://www.google.com/maps/search/?api=1&query=Folkets%20Hus%2C%20Hovedgade%2012%2C%203730%20Snogeb%C3%A6k%2C%20Denmark" target="_blank" rel="noopener"><span data-i18n="btn.map">Map</span></a></div></div>
+        <div class="event-right"><p class="event-venue">Folkets Hus</p><p class="event-addr"><a href="https://www.google.com/maps/search/?api=1&query=Folkets%20Hus%2C%20Hovedgade%2012%2C%203730%20Snogeb%C3%A6k%2C%20Denmark" target="_blank" rel="noopener">Hovedgade 12, 3730 Snogebæk</a></p><p class="event-attire"><span data-i18n="sched.e3.attire">Attire: Semi-formal · danceability first</span> <button type="button" class="link-button" data-lightbox="assets/images/semi-formal.jpg" data-i18n="sched.attire.examples">(Examples)</button></p><p class="event-desc" data-i18n="sched.e3.desc">Dinner, speeches, cake, and dancing well into the evening. Reinforcements at midnight.</p><div class="event-btns"><a class="btn" href="https://www.google.com/maps/search/?api=1&query=Folkets%20Hus%2C%20Hovedgade%2012%2C%203730%20Snogeb%C3%A6k%2C%20Denmark" target="_blank" rel="noopener"><span data-i18n="btn.map">Map</span></a></div></div>
       </div>
 
     <p class="sched-day" data-i18n="sched.sun">Sunday, September 5, 2027</p>
@@ -70,6 +70,14 @@
 </main>
 
 <div class="page-banner" style="background-image: url(assets/images/banner-schedule.jpg); background-position: center 80%" role="presentation"></div>
+
+<!-- Attire examples popup. A native <dialog> rather than a hand-rolled
+     overlay: it brings Esc-to-close, focus trapping and the backdrop with
+     it. Opened by any [data-lightbox] button — see js/site.js. -->
+<dialog id="lightbox" class="lightbox">
+  <button type="button" class="lightbox-close" data-lightbox-close aria-label="Close" data-i18n-al="lightbox.close">&times;</button>
+  <img alt="Photos of guests in semi-formal attire" aria-label="Photos of guests in semi-formal attire" data-i18n-al="sched.attire.examples.alt">
+</dialog>
 
 <script src="js/config.js"></script>
 <script src="js/i18n.js"></script>

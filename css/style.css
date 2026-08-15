@@ -173,6 +173,9 @@ p { margin: 0.9rem 0; }
 .event-addr { margin: 0.1rem 0; font-size: 0.9rem; }
 .event-addr a { font-style: italic; }
 .event-attire { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--accent); margin: 0.6rem 0 0.3rem; }
+/* Browsers reset text-transform on form controls, so the "(Examples)"
+   button would sit in mixed case in the middle of an all-caps line. */
+.event-attire .link-button { text-transform: inherit; letter-spacing: inherit; }
 .event-desc { color: var(--muted); font-size: 0.98rem; margin: 0.4rem 0; }
 .event-btns { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-top: 0.9rem; }
 
@@ -216,6 +219,29 @@ p { margin: 0.9rem 0; }
   background: none; border: none; padding: 0; font: inherit;
   color: var(--accent); text-decoration: underline; cursor: pointer;
 }
+
+/* ---------- lightbox (attire examples) ---------- */
+/* The dialog box is only a frame for the picture, so it carries no chrome
+   of its own — the image supplies the visible bounds. Sized against the
+   viewport so a tall image still fits on a phone without scrolling. */
+.lightbox {
+  border: none; padding: 0; background: transparent; overflow: visible;
+  max-width: 94vw; max-height: 94vh;
+}
+.lightbox::backdrop { background: rgba(0, 0, 0, 0.75); }
+.lightbox img {
+  display: block; max-width: 94vw; max-height: 90vh;
+  width: auto; height: auto; border-radius: 8px;
+}
+.lightbox-close {
+  position: absolute; top: 0.4rem; right: 0.4rem;
+  width: 2rem; height: 2rem; padding: 0; line-height: 1;
+  font-family: inherit; font-size: 1.3rem;
+  color: #fff; background: rgba(0, 0, 0, 0.55);
+  border: none; border-radius: 50%; cursor: pointer;
+}
+.lightbox-close:hover { background: rgba(0, 0, 0, 0.8); }
+.lightbox-close:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
 
 /* ---------- forms (RSVP + gate) ---------- */
 label, .field-label {

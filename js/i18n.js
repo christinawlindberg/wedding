@@ -37,7 +37,7 @@ window.I18N_DA = {
   "sched.e1.addr": "Sted annonceres senere.",
   "sched.e1.desc": "Ledsagere er velkomne.",
   "sched.e2.title": "Kirkelig vielse",
-  "sched.e2.time": "Eftermiddag &ndash; tidspunkt f&oslash;lger",
+  "sched.e2.time": "Eftermiddag &ndash; 14.00",
   "sched.e2.attire": "P&aring;kl&aelig;dning: Semiformel",
   "sched.e2.desc": "Ceremonien foreg&aring;r p&aring; dansk og varer omkring en time &mdash; se siden Info for, hvad du kan forvente.",
   "sched.e3.title": "Middag, kage og fest",
